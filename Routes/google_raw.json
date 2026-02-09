@@ -1,0 +1,227 @@
+{
+   "geocoded_waypoints" : 
+   [
+      {
+         "geocoder_status" : "OK",
+         "place_id" : "ChIJV5zUUDUXM4cR0AVtYPmagHk",
+         "types" : 
+         [
+            "street_address"
+         ]
+      },
+      {
+         "geocoder_status" : "OK",
+         "place_id" : "ChIJZ9vEzvwQM4cRFizuJPTUhiY",
+         "types" : 
+         [
+            "route"
+         ]
+      }
+   ],
+   "routes" : 
+   [
+      {
+         "bounds" : 
+         {
+            "northeast" : 
+            {
+               "lat" : 36.0871834,
+               "lng" : -112.0993857
+            },
+            "southwest" : 
+            {
+               "lat" : 36.0572526,
+               "lng" : -112.1467687
+            }
+         },
+         "copyrights" : "Powered by Google, ©2025 Google",
+         "legs" : 
+         [
+            {
+               "distance" : 
+               {
+                  "text" : "7.9 mi",
+                  "value" : 12713
+               },
+               "duration" : 
+               {
+                  "text" : "3 hours 12 mins",
+                  "value" : 11518
+               },
+               "end_address" : "E Tonto, Grand Canyon Village, AZ 86023, USA",
+               "end_location" : 
+               {
+                  "lat" : 36.0871834,
+                  "lng" : -112.0993857
+               },
+               "start_address" : "15 Bright Angel Trail, Grand Canyon Village, AZ 86023, USA",
+               "start_location" : 
+               {
+                  "lat" : 36.0572526,
+                  "lng" : -112.1437922
+               },
+               "steps" : 
+               [
+                  {
+                     "distance" : 
+                     {
+                        "text" : "49 ft",
+                        "value" : 15
+                     },
+                     "duration" : 
+                     {
+                        "text" : "1 min",
+                        "value" : 12
+                     },
+                     "end_location" : 
+                     {
+                        "lat" : 36.0572901,
+                        "lng" : -112.1436303
+                     },
+                     "html_instructions" : "Head \u003cb\u003eeast\u003c/b\u003e on \u003cb\u003eRim Trail\u003c/b\u003e toward \u003cb\u003eBright Angel Trail\u003c/b\u003e",
+                     "polyline" : 
+                     {
+                        "points" : "yla{EtankTAEEY"
+                     },
+                     "start_location" : 
+                     {
+                        "lat" : 36.0572526,
+                        "lng" : -112.1437922
+                     },
+                     "travel_mode" : "WALKING"
+                  },
+                  {
+                     "distance" : 
+                     {
+                        "text" : "256 ft",
+                        "value" : 78
+                     },
+                     "duration" : 
+                     {
+                        "text" : "1 min",
+                        "value" : 58
+                     },
+                     "end_location" : 
+                     {
+                        "lat" : 36.0578325,
+                        "lng" : -112.1431607
+                     },
+                     "html_instructions" : "Slight \u003cb\u003eleft\u003c/b\u003e onto \u003cb\u003eBright Angel Trail\u003c/b\u003e",
+                     "maneuver" : "turn-slight-left",
+                     "polyline" : 
+                     {
+                        "points" : "ama{Et`nkTSe@GOIGEEIISEA?A?MAE?EACE"
+                     },
+                     "start_location" : 
+                     {
+                        "lat" : 36.0572901,
+                        "lng" : -112.1436303
+                     },
+                     "travel_mode" : "WALKING"
+                  },
+                  {
+                     "distance" : 
+                     {
+                        "text" : "4.3 mi",
+                        "value" : 6934
+                     },
+                     "duration" : 
+                     {
+                        "text" : "1 hour 48 mins",
+                        "value" : 6473
+                     },
+                     "end_location" : 
+                     {
+                        "lat" : 36.0784209,
+                        "lng" : -112.1272837
+                     },
+                     "html_instructions" : "Slight \u003cb\u003eright\u003c/b\u003e to stay on \u003cb\u003eBright Angel Trail\u003c/b\u003e",
+                     "maneuver" : "turn-slight-right",
+                     "polyline" : 
+                     {
+                        "points" : "mpa{Ev}mkTCCIQEIAC?A?AAC?AA?A??@?@?@?B@L@D@@P\\@@@@FBJBJB@@D@HHDHFLDN@N?@?LAV?B?@AHD^?@DZ@N?HAVAD?@A?GPEHEDA@A@A@CFCJELABEHABADAJ?@AFCHGJADA??@?DAD@B@BBDDDB@HFFDDF@B?@?@?@?DADABEDC@G@A?A@?@A??@?@?B?@@@@B@J@D?@@BAJAHCJ?@?@CHELGJCFEJGFKDWLMDMLIFGDC@C?GACAA?C?OIKEAAIEECE?E?C@A?E?U?I?AAAA?A?A@?D?HADA@AHEJKBA@AB?B?FBLBB?@?FBJ@B?@?@?@ABADCHOHG?ANOHI@ABGBM?Q?A@OAG@I@G@??AAGAMAIAI?A@E@MDQ?A@A@M@WASIY?AEKCOAK@I?U?I?A?AAEGMGOAA?AEOESAAKOMIAAMIMMGGUMA?GC[QGEKOAC?AQc@?ACGG_@AAIg@AACMCIAC?AA??AA?A@A?A@A@A@?@A@?B@X?@?DB\\?FA@CN?N?FAN?\\?@BZ@J?@?H@LFN?@FTDN@@T^?@DPFR?@BH@T?D?B?@?@?@A??@A?A?GAKCCAA?ICE?CBAD@B?@@B@?@BBBFN@J?@?H?B?@A?A?A?AACECI?AACEGCEIGAAIEKICC?C?A?C?EDMDK?E?A?A?AAAAC?AA?AAC?C?A@CBA@A?CBOLCDAB?@A@?D?BA??@A?A??AAAAG?G?A?A@EDODM@A?AFMFK@C?A?A?A?AAA?AA?C?E@OFA@OJGBABA@A@?@AH?BA@A??@?AA??CAC?G?A?A?EBK?CHO?A@ALWDIFGFIBC@E?A?A?AA?A@EBEDMF?@C@WNOHA@CDA@?@A?A??AAA?A?A?A@A?A@CLU@C?AVc@V]Ck@?M?K?E?C?AA??AA??@A??@?PAHAD?@A?AA?CGe@CQCM?A?A@A@CBE@A?E@CACAMACAIAKAG?G?E?A?EE_@?CM_@AGCQCUAAAGCGCECCCEAC?AAGEKIOCGCI?OAGAEAGEI_@_@EGIIEGAC?AAI?C@EBEDS@E?C@K?Q?I?YCQEQMQOYGWAS?I@I@G@CBCBADA@?JEFEFK@?LUHGBC@A@C@E?AAECK?CMUIIIKMYA@?@?@?@?@JZFT?B?@?@?BABABMRGJGJSBC?MCU?I?WHA?AR?V?JD\\?@?NGT@BDLNPF^CJETMJQPIHIHMT?LJT@@NRBN@JH\\FVFNBJ?HAL?DAPIVC^?J@V@RBTALCDABK@SIIEUO]Ua@Ma@OGAq@MKBa@JC@EWDEBARQHGHGJ?J?V?J?HAp@LF@?ADM@O?M@CCYAMAEGS?AGGAAGYBM?ACMA[BU?GAEAGEKGKIKMUEGAAGY?A?M@]?EDWAIGo@?GACEGC@AL@J?D@LCPGFGTCJIRIXEN@D?D@F?DFV@BDPCDEEACEICEKSACGGGKAIAM?CA[?C?G?QBKCEEFIJA@EPGTKb@ADEFECAC@U@G?c@?SAU@ADMACODA@IJA@ELAFCJAB?L?JAF?J?FC@AE?E?GAIAIEK?AGIEIAK?C?IJSDEJKDEHKBE?IIKECKIIEYQMIQKMIGOAEEMAAECEIGMCECKG]?CECAAA?E?ECCEAACGEB?@AJBD@BDJ@D?@?HAF?DCJA@E@AMAIGGA?GCA?KICKAA?K?E?OAG?CCGCOK@G?@PEJABCDILEJA@ABAPDPA@A@CCCGAQ?E?I?C?W?EAIAOGOCIAI?O@K@SBW?GBY?I@G?KCWAG?AG[?CAIAIMQEEAAKWAAEEKKMAEAC?SQCAAAWECAG?C?W@A?EAI?EBFDB@B?@@RDFBD@B?JNBH@F@@FNHDB@@BFLBPCBGFIMEECCAASY?AAAMGGCG?C?A??BH@LFB@?@FJCHEF@?BBFFDLBF@B?N@J@J?@ABAPGHEICCAEBKBKCAEEA@GDKFA@I?EFDN@BBHHNDHBB@BDREBAAKKMI?AA?KEKGEEAAGIGGGI?A?A?QFKCIACKHGDG@?@KBEBCEDI?API?EAAC?C@EBMBMDGBAE@CHEDEDEDIAICKEMCCOIEEGEOIA?MI?AIEEAEAIECAIMAAGOIQACEOGSESEQACESEUGSCGAKAUAGCMAMAECUEUACGMGMCAIM?CCQHEFEDCPMDCTUFEHGPM@AVIHCDCBMEOA?IEKBK@M@M?OHOB]DOBM@]BYEMAU?Y@I?SAO@C?MCMGAAGGMOECOGQGGAUGCAKEICGEAACKK[AAIWEKACSMGGGEGEII?E@GFMFOEGI?MBA?OCOACAOKMKEEWOUOIGMMKIAAIQIQUAM?E?OCMAC?MMKKEEGKCQCKCQ?KIQAG@E?C@I?GCAG?EBC?GFILCDCBG@CACCEM?AMSQ_@KQCEQ[EEY[[[EMKMAASSEEQSIGKKSGAAOAQAc@AI?Y?c@?c@BQ?Q?S_@SQGCSKKGMDQM?@E?G@MAGBC@EBWEIAU?C?OAMACECACESOKEKEICQEQAIAA?SIGAE?M?ICCAEAE?I?I?I@M@G?IAICQEICMEIA[EGAMCODCCIEAA_@MC?QMIECCSSWc@Ya@EGEGM[CIIOCGS_@MUCAQMCC[WWQ"
+                     },
+                     "start_location" : 
+                     {
+                        "lat" : 36.0578325,
+                        "lng" : -112.1431607
+                     },
+                     "travel_mode" : "WALKING"
+                  },
+                  {
+                     "distance" : 
+                     {
+                        "text" : "0.3 mi",
+                        "value" : 506
+                     },
+                     "duration" : 
+                     {
+                        "text" : "6 mins",
+                        "value" : 386
+                     },
+                     "end_location" : 
+                     {
+                        "lat" : 36.0819328,
+                        "lng" : -112.1245872
+                     },
+                     "html_instructions" : "Turn \u003cb\u003eright\u003c/b\u003e onto \u003cb\u003eBright Angel Trail\u003c/b\u003e/\u003cwbr/\u003e\u003cb\u003eTonto Trail\u003c/b\u003e",
+                     "maneuver" : "turn-right",
+                     "polyline" : 
+                     {
+                        "points" : "cqe{EnzjkTBk@AQ?AAMGY?AEKa@_ACKGOc@e@GC[K[SAAGAMEKAE?WCGAE?E?GKGGAACCYSE?S?G@A?C?C?MEIG?ACCGGKSCES[CAUKGCCACASEEAC?E?YBC@E?UCCAAA_@Oa@OA?o@WQKOI"
+                     },
+                     "start_location" : 
+                     {
+                        "lat" : 36.0784209,
+                        "lng" : -112.1272837
+                     },
+                     "travel_mode" : "WALKING"
+                  },
+                  {
+                     "distance" : 
+                     {
+                        "text" : "3.2 mi",
+                        "value" : 5180
+                     },
+                     "duration" : 
+                     {
+                        "text" : "1 hour 16 mins",
+                        "value" : 4589
+                     },
+                     "end_location" : 
+                     {
+                        "lat" : 36.0871834,
+                        "lng" : -112.0993857
+                     },
+                     "html_instructions" : "Slight \u003cb\u003eright\u003c/b\u003e onto \u003cb\u003eE Tonto\u003c/b\u003e/\u003cwbr/\u003e\u003cb\u003eTonto Trail\u003c/b\u003e",
+                     "maneuver" : "turn-slight-right",
+                     "polyline" : 
+                     {
+                        "points" : "agf{EtijkTKOISAAIMKOO[EIEKIEI?AAEEEIEECIA?KIGKCIIGEK?I?E?EEOIIOCc@?UIKE[WWYOYCKAKCIAQAU@M?[?Q@[AA@M?[?K?CB]?M@ODKCUJ]BG@SH?HAFE@CAE@O?CDMBK@G@AHOBKAKFMAMCKAAE[BYDMJAFKMWCICK@IJI@EAIGK@M@UJ[FQ@EBCBQ?YFSFK@ANGLQDKDQBEFQHU@KFU@EBKVYP]PQFGVWNOHGFABE@I?IDa@BU?A@CDYBMDEHCDEAIJa@DKJMDODKFOBM@?FABA@IAM?A?O@KDKAS@QAKEISWCa@@EBWF[Jy@?MACAe@B]DM?C?A@IAIDQBMAc@Am@@c@?A@A@e@@ABAJKNAB?H?T?B@N?RAF?RO@ADEj@m@DEx@k@BALIb@[JENELCBAHCN?DBDBNZJJLBFCBABATO@A@A@?F?DBDDD@@?BA@?HILOHSJQFINO@CLOJEBALENCB?NCNEBAXKB?BA\\K@?@AXSDCRAJD@?NX@D?BF\\D@B@@@\\?B?HAH?HB@@@@D@D?DGBIBAD?PDFBB@LDVCPM@G@C@EEUGEACWYACAA]a@QOAGCUIKACAASYCCAABc@?C@QPy@J_@He@DO@CBG@UKOQ?[Fi@KEEAASQAIACI_@Eu@Bg@?C@MJS@CDIPQ@ATWBA@CJKNI@?PAT@j@[NMLKJK@ARUDGLMP[N]DIPQT[Re@JIFQAUF]LSLEFE@Q?K@ANWBGDMFS?I@E?E?EECCAWCAA?CLE?ABEDS@M@Y?Q?A?[Di@BOJOLK@?\\Q@APGRARNDFDDJDFCBCFENIFA@?JAHAHIBOFGFIJINO@?DEBEVUVGBAJAJAH?B?H?J?FGBC@UGK?AICUKGCYIICA?UGCAEEECGOAACEE?E?QAK?G?GGCMCEU?Q?OAAAIGUOGGGEGGE@A?A?EBA?IBK@?AGACAGEIAC?G?C@E@SJKHGHE@A@G?W?K@W?G?C@W?K@O?G?U@MDA@OBQ@E?ACOOCEEIACGWCK?AC]AGCY?I?GAOAMC?IHODAGCQEMGCAAKDILADAFEJEBIFCAICGGKQSMEH?LAV?PAd@AHGHE@EBIBO@Op@GXAHA?EDE@SHA?a@DK@E@QCA?GGMIECECQAK?K?E?IAKEUYACWYICK@IJCDSZQXMH?@KBMBI?I@OBGBQHG?E@AAKIIGCCCAUOA?q@SMAE?AAEBQLC@IDGBQBG@A?[GSMOUGWCIAAEa@?QAEIAKAQEKGKG_@CS?A?G?EAMAOMUE]G]MOCMBKH?@?HAHAVABABIPEHCBCAMEKEAACAMIUG]C_@GEA{@Ki@?UEYKOMGGSS[[EEA?Y[SQAC[[EEIUCGEKQK]IGCGAIIM?K@UF]B[?O?G?A?UOGEWQECQMEEwAkAEEKIGK"
+                     },
+                     "start_location" : 
+                     {
+                        "lat" : 36.0819328,
+                        "lng" : -112.1245872
+                     },
+                     "travel_mode" : "WALKING"
+                  }
+               ],
+               "traffic_speed_entry" : [],
+               "via_waypoint" : []
+            }
+         ],
+         "overview_polyline" : 
+         {
+            "points" : "yla{EtankT[eAW]_AY[k@Vz@t@\\Tv@Aj@JbB[bA[v@Uv@Nb@X^WX@`A_@fA}A~@s@U}@GMEn@YjADx@aAHkAGm@LcBScBSu@i@aA_BcAs@iBYiAG@Cl@C|BNtAj@zAL~@CFo@GPf@@Ze@k@[_@Jk@QGa@`@ENEW^qAu@ZIXEGLs@h@eAqA|@Lg@p@gACkACGId@MoAFYi@{DUm@]sA_AsANy@CgAc@}@Iu@HYVI^g@PQCYq@cAR|@Q^g@ZeADCv@AdAVb@Bj@S`@s@z@l@rBR|@M|@A`Ck@IuAs@i@Q}@Ie@L?]j@c@z@?bAJHo@a@gBAeBu@_BFiAKeAIE?XIl@a@rBNr@QMe@iAAk@B]I@Yt@Sp@CuBBQQFSb@KfAS_AGc@b@k@L[e@_@gAq@Qe@i@sAOEOKJt@GZQ]WME_@Ec@OMEPUb@Kb@@TIc@KuA@cBGuBg@kAcAk@qAGHJb@Ll@z@Hf@[OW_@a@KTLFXRl@Bh@CTM?@a@S?WHDd@R\\?X{@m@W]Bi@]LUBV[OBe@FVU?_@_@a@}@e@s@mA_AeFi@{AvAeAt@]HQGOa@?{@NyANwAEq@?e@UcBu@WW]aAe@_@O]N]OGo@AmBuAa@o@i@Ao@S]o@OwAQEYZS?e@cAoBmCyAmAcEAaAu@_@S_@GMB_@FaBSo@a@w@MeAScA@oBa@_@E_Aa@gBsCo@mAu@k@WQBk@ASOu@qAaCaAe@sAOUY_@S[@WEUUc@u@a@QiAEuC_Aw@y@W_@e@w@WQm@w@Ea@OYs@CuAaAY{@?oCFiCZy@PQ\\sA@yBRMQa@Je@Ey@Xw@RkAd@g@j@sBbAqAx@q@VqBX]ZeAVy@NMBiB]cAXsBFsBFcDRu@r@An@?fAeApA}@lAk@\\Ef@n@\\CZSXJPKj@_Aj@i@bBc@f@Mt@[^d@Pd@bADRCLKj@Ph@QBKMe@y@aAa@y@[c@B{@l@oCDKIe@m@Fo@QYa@KaCTo@l@m@^YPA`AYj@g@x@gAdBwCDs@ZYHc@d@sAIQYELIJi@@m@HuAx@m@f@Kj@b@bA]Ta@d@c@x@i@d@E`@GAg@gBk@U[a@G[GGSg@?q@[]Si@DYIe@N[VcA@kBJi@F[c@WsBGe@IHQASe@Y`@UVa@_@YCAd@KjAe@J[tAa@PeAD]Uo@Eq@a@c@a@YRs@`AwAZcAg@gAU]Pk@N]Gc@c@SeAAWUCiAYc@AqA]m@QYLCl@Sb@kA_@_CY_AEi@Y}@}@q@q@o@_AWWe@Mk@I_BJ}A_AqBgB"
+         },
+         "summary" : "Bright Angel Trail and E Tonto/Tonto Trail",
+         "warnings" : 
+         [
+            "Walking directions are in beta. Use caution – This route may be missing sidewalks or pedestrian paths."
+         ],
+         "waypoint_order" : []
+      }
+   ],
+   "status" : "OK"
+}

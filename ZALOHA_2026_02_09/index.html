@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VR Turista - Street View</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    
+    <link rel="stylesheet" href="style.css"> 
+</head>
+<body>
+    <h1>VR Turista</h1>
+
+    <div id="routeInfoPanel">
+        <span class="route-label">Aktuálna trasa:</span>
+        <span id="routeName" class="route-value">Čakám na mobil...</span>
+    </div>
+
+    <div id="viewControls">
+        <button id="toggleStats" class="toggle-btn active"><i class="material-icons" style="font-size: 18px; vertical-align: middle;">assessment</i> Štatistiky</button>
+        <button id="toggleGuide" class="toggle-btn"><i class="material-icons" style="font-size: 18px; vertical-align: middle;">explore</i> Sprievodca</button>
+        <button id="togglePanorama" class="toggle-btn active"><i class="material-icons" style="font-size: 18px; vertical-align: middle;">streetview</i> Street View</button>
+        <button id="toggleMap" class="toggle-btn active"><i class="material-icons" style="font-size: 18px; vertical-align: middle;">map</i> Mapa</button>
+        <button id="startVR" class="toggle-btn" style="background: #D32F2F; color: white; border-color: #B71C1C;">
+            <i class="material-icons" style="font-size: 18px; vertical-align: middle;">vr_pano</i> ŠTART VR
+        </button>
+    </div>
+
+    <div id="guidePanel" class="hidden">
+        <h3>Hlasový sprievodca</h3>
+        <div id="guideList">
+            <div style="padding:10px; color:#666;">Načítavam body...</div>
+        </div>
+    </div>
+
+    <div id="statsPanel" class="visible">
+        <h3>Štatistiky</h3>
+
+        <div id="levelBox">
+            <div class="level-header">
+                <span id="userLevel">Level 1</span>
+                <span id="userRank">Gaučový povaľač</span>
+            </div>
+            <div class="level-progress-bg">
+                <div id="levelProgressBar" class="level-progress-fill"></div>
+            </div>
+            <div id="levelXpText">0 / 200 XP</div>
+            
+            <button id="btnShowLevels" class="level-list-btn">Zobraziť všetky úrovne</button>
+        </div>
+        
+        <div class="stat-row">
+            <span class="stat-label">Kroky z mobilu:</span>
+            <span class="stat-value" id="steps">0</span>
+        </div>
+
+        <div class="stat-row">
+            <span class="stat-label">Spálené kalórie:</span>
+            <span class="stat-value" id="calories">0 kcal</span>
+        </div>
+
+        <div class="achievement-box">
+            <div class="stat-label" style="font-weight: bold; color: #1565C0;"><i class="material-icons" style="font-size: 16px; vertical-align: middle;">emoji_events</i> Najbližší cieľ:</div>
+            <div id="nextGoalName" class="goal-title">Načítavam...</div>
+            
+            <div class="progress-container">
+                <div id="goalProgressBar" class="progress-bar"></div>
+            </div>
+            
+            <div class="goal-stats">
+                <span id="goalCurrent">0</span> / <span id="goalTarget">0</span>
+                <span id="goalRemaining" style="color: #D32F2F; margin-left: 5px; font-weight:bold;"></span>
+            </div>
+        </div>
+
+        <div class="stat-row">
+            <span class="stat-label">Pozícia:</span>
+            <span class="stat-value" id="position">0 / 0</span>
+        </div>
+
+        <div class="stat-row">
+            <span class="stat-label">Prejdené / Celkom:</span>
+            <span class="stat-value">
+                <span id="traveledDistance">0.00 km</span> / <span id="totalRouteDistance" style="color:#777;">0.00 km</span>
+            </span>
+        </div>
+
+        <div class="stat-row">
+            <span class="stat-label">Progres:</span>
+            <span class="stat-value" id="percentage">0.0 %</span>
+        </div>
+        <div class="stat-row">
+            <span class="stat-label">Dnes celkovo:</span>
+            <span class="stat-value" id="dailySteps" style="color: #FBC02D;">0</span>
+        </div>
+        
+
+        <div id="status">Pripravené.</div>
+    </div>
+
+    <div id="levelsModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Cesta hrdinu</h2>
+                <span class="close-btn" id="closeLevels">&times;</span>
+            </div>
+            <div id="levelsListContainer"></div>
+        </div>
+    </div>
+
+    <div id="goalsModal" class="modal hidden" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title">Všetky ciele a úspechy</span>
+                <span id="closeGoals" class="close-btn">&times;</span>
+            </div>
+            <div id="goalsListContainer"></div>
+        </div>
+    </div>
+
+    <div id="mapsContainer">
+<div id="panorama" class="visible" style="position: relative;"> 
+    
+<a-scene embedded vr-mode-ui="enabled: true">
+    <a-sky id="skybox" 
+           geometry="primitive: sphere; radius: 500; phiLength: 360" 
+           material="shader: flat; side: back; npot: true">
+    </a-sky>
+
+    <a-entity id="vrCamera" camera look-controls >
+        <a-entity id="vr3dHud" position="0 -0.5 -1.2" scale="0.4 0.4 0.4">
+            
+            <a-text id="vr3dLevelText" value="Level 1 | Gaucovy povalac" 
+                    position="0 0.4 0" align="center" width="4" color="#FFD600"></a-text>
+
+            <a-text id="vr3dSteps" value="0 kr." position="-0.8 0.1 0" align="center" width="3"></a-text>
+            <a-text id="vr3dDist" value="0.00 km" position="0 0.1 0" align="center" width="3"></a-text>
+            <a-text id="vr3dCals" value="0 kcal" position="0.8 0.1 0" align="center" width="3"></a-text>
+            <a-text id="vr3dDailySteps" value="Dnes: 0 kr." position="0 -0.4 0" align="center" width="3" color="#FFEB3B"></a-text>
+            <a-text id="vr3dNextPoi" value="Ciel: Nacitavam, urob par krokv ..." 
+                    position="0 -0.2 0" align="center" width="3" color="#81C784"></a-text>
+
+            <a-entity id="vrPoiNotification" position="0 0.8 0" visible="false">
+                <a-text id="vrPoiTitle" value="" align="center" position="0 0.3 0" width="3.5" color="#FFD600"></a-text>
+                <a-text id="vrPoiDesc" value="" align="center" position="0 0.1 0" width="2.5" color="#FFF"></a-text>
+            </a-entity>
+        </a-entity>
+    </a-entity>
+</a-scene>
+
+    <div id="vrHud" class="vr-hud-overlay hidden" style="position: absolute; pointer-events: none; top: 60px;">
+        <button id="vrToggleStats" 
+            onmousedown="event.stopPropagation();" 
+            onclick="event.stopPropagation(); const c = document.getElementById('vrHudContent'); const h = document.getElementById('vrHud'); const i = document.getElementById('vrToggleIcon'); if(c.style.display==='none'){c.style.display='block'; h.style.background='rgba(0,0,0,0.85)'; h.style.border='2px solid rgba(255,255,255,0.2)'; i.innerText='visibility';}else{c.style.display='none'; h.style.background='transparent'; h.style.border='none'; i.innerText='visibility_off';}"
+            style="position: absolute; bottom: -50px; right: 0; pointer-events: auto; background: rgba(0,0,0,0.8); color: white; border: 1px solid rgba(255,255,255,0.3); border-radius: 12px; padding: 10px 15px; cursor: pointer; display: flex; align-items: center; gap: 8px; z-index: 10000; box-shadow: 0 4px 15px rgba(0,0,0,0.6);">
+            <i class="material-icons" id="vrToggleIcon" style="font-size: 22px;">visibility</i>
+            <span style="font-size: 13px; font-weight: bold; font-family: sans-serif; white-space: nowrap;">SKRYŤ ŠTATISTIKY</span>
+        </button>
+
+        <div id="vrHudContent" style="pointer-events: auto;">
+            <div class="vr-hud-header">
+                <i class="material-icons">stars</i>
+                <span id="vrLevelNum">Level 1</span> | <span id="vrLevelTitle">Gaučový povaľač</span>
+            </div>
+            
+              <div id="vrDirectionContainer" style="display: flex; flex-direction: column; align-items: center; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
+                <div class="vr-hud-label">SMER TRASY</div>
+                <div id="vrArrow" style="font-size: 40px; color: #FFD600; transition: transform 0.1s ease-out;">
+                <i class="material-icons" style="font-size: 50px;">navigation</i>
+              </div>
+            </div>
+            
+            <div class="vr-hud-stats-grid">
+                <div class="vr-hud-stat">
+                    <i class="material-icons" style="color: #FFD600;">directions_walk</i>
+                    <span id="vrStepsDisplay">0</span> kr.
+                </div>
+                <div class="vr-hud-stat">
+                    <i class="material-icons" style="color: #4FC3F7;">straighten</i>
+                    <span id="vrDistanceDisplay">0.00 km</span>
+                </div>
+                <div class="vr-hud-stat">
+                    <i class="material-icons" style="color: #FF7043;">local_fire_department</i>
+                    <span id="vrCaloriesDisplay">0</span> kcal
+                </div>
+            </div>
+            <div class="vr-hud-stat">
+                  <i class="material-icons" style="color: #FFEB3B;">calendar_today</i>
+                  <span id="vrDailyStepsDisplay">0</span> kr. (dnes)
+            </div>
+
+            <div class="vr-hud-progress-sec">
+                <div id="vrNextPoiSec" style="margin-bottom: 12px; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
+                    <div class="vr-hud-label" style="color: #FFD600; margin-bottom: 4px;">Najbližší cieľ na trase:</div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span id="vrNextPoiName" style="font-size: 16px; font-weight: bold; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 70%;">Načítavam...</span>
+                        <span id="vrNextPoiDist" style="font-size: 16px; font-weight: 900; color: #81C784;">0 m</span>
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+                    <div class="vr-hud-label">Level Progres</div>
+                    <div id="vrLevelXpText" style="font-size: 14px; color: #fff; font-weight: bold;">0 / 0 XP</div>
+                </div>
+                <div class="vr-hud-bar-bg"><div id="vrLevelBar" class="vr-hud-bar-fill"></div></div>
+                
+                <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 5px;">
+                    <div class="vr-hud-label">K cieľu: <span id="vrGoalName">...</span></div>
+                    <div id="vrGoalStepsText" style="font-size: 14px; color: #fff; font-weight: bold;">0 / 0 kr.</div>
+                </div>
+                <div class="vr-hud-bar-bg"><div id="vrGoalBar" class="vr-hud-bar-fill goal"></div></div>
+            </div>
+        </div> 
+    </div>
+    
+
+    <div id="toast-container"></div>
+    <button id="exitVR" class="hidden" style="position: absolute; top: 20px; right: 20px; z-index: 9999; background: rgba(211, 47, 47, 0.9); color: white; border: none; padding: 15px 25px; border-radius: 10px; font-weight: bold; cursor: pointer;">
+        UKONČIŤ VR REŽIM
+    </button>
+</div>
+
+        <div id="map" class="visible"></div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    
+    <script src="script.js"></script>
+
+    <script
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDCp9kYg5dVadbncxuP24QeYX2a1Qze2is&libraries=geometry"
+        async
+        defer>
+    </script>
+</body>
+</html>

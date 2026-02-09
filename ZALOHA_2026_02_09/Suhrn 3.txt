@@ -1,0 +1,134 @@
+ Finálne Zhrnutie Projektu – VR Turista
+������ Projektová Štruktúra
+text
+VR Turista Project
+├── Android App (Kotlin)
+│   ├── MainActivity.kt
+│   │   ├── Firebase napojenosť (currentRouteId, activeRouteId)
+│   │   ├── Čítanie štatistík: routes/<id>/position, totalPositions, 
+│   │   │                      totalDistance, traveledDistance
+│   │   ├── Počúvanie krokov: routes/<id>/steps
+│   │   ├── Reset: routeRef().child("steps").setValue(0)
+│   │   └── UI: Compose, dropdown na výber trasy, štatistiky, progres bar
+│   │
+│   └── StepService.kt
+│       ├── Foreground Service počúvajúci TYPE_STEP_COUNTER
+│       ├── Globálny baseSteps (NERESETUJE sa pri zmene trasy!)
+│       ├── Sleduje activeRouteId z Firebase
+│       ├── Píše kroky do: routes/<activeRouteId>/steps
+│       └── Inkrementuje v reálnom čase pri chôdzi
+│
+├── Web (HTML/JS/CSS)
+│   ├── index.html
+│   │   ├── Google Street View (panorama div)
+│   │   ├── Google Maps (klasická mapa)
+│   │   ├── Štatistiky panel (kroky, pozícia, vzdialenosti, progres)
+│   │   ├── Toggle tlačidlá (stats, panorama, mapa)
+│   │   └── Dropdown výber trasy
+│   │
+│   └── script.js
+│       ├── Firebase konfigurácia a inicializácia
+│       ├── Počúvanie currentRouteId (zmena z mobile)
+│       ├── attachStepsListener() – počúva routes/<id>/steps
+│       ├── Pohyb po trase na základe krokov (moveForward)
+│       ├── Synchronizácia Street View a mapy
+│       ├── Reset trasy (routes/<id>/steps = 0)
+│       └── Layout management (viditeľnosť komponentov)
+│
+├── JSON Trasy
+│   ├── route_bulikova_lada116.json
+│   │   └── { points: [...], stepsPerMove: 12, name: "..." }
+│   │
+│   └── route_bulikova_eurovea.json
+│       └── { points: [...], stepsPerMove: 12, name: "..." }
+│
+└── Firebase Realtime Database
+    ├── routes/
+    │   ├── bulikova_lada116/
+    │   │   ├── steps: 0 (int) – počet krokov na tejto trase
+    │   │   ├── position: 1 (int) – aktuálna pozícia na trase
+    │   │   ├── totalPositions: 168 (int) – celkový počet bodov
+    │   │   ├── totalDistance: 2.71 (float, km) – celková dĺžka
+    │   │   ├── traveledDistance: 0.0 (float, km) – prejdená dĺžka
+    │   │   └── resetRequest: timestamp (long)
+    │   │
+    │   └── bulikova_eurovea/
+    │       └── (identická štruktúra)
+    │
+    ├── currentRouteId: "bulikova_lada116" (string) – aktuálna trasa
+    └── activeRouteId: "bulikova_lada116" (string) – aktívna trasa na mobile
+������ Tok Dát
+Kroky (pedometer → Firebase → vizualizácia)
+text
+Android Pedometer (TYPE_STEP_COUNTER)
+    ↓
+StepService.onSensorChanged()
+    ↓
+Globalny baseSteps (nikdy sa neresetuje)
+    ↓
+current = total - baseSteps
+    ↓
+Firebase: routes/<activeRouteId>/steps = current
+    ↓
+Web: routeRef().child('steps').on('value')
+    ↓
+moveForward() → zmena panoramy, mapy, štatistík
+    ↓
+MainActivity.kt: routeRef().child('steps').on('value')
+    ↓
+Update UI (kroky, pozícia, progres)
+Zmena Trasy (web ↔ mobile)
+text
+Web: user zvolí novú trasu z dropdown
+    ↓
+Firebase: currentRouteId = newId
+Firebase: activeRouteId = newId
+    ↓
+StepService: detectuje activeRouteId zmenu
+    └─→ zmení currentRouteId (pokračuje pisať do novej trasy)
+    
+MainActivity: detectuje currentRouteId zmenu
+    └─→ zmení CURRENT_ROUTE_ID
+    └─→ resetuje UI stav
+    └─→ napojeí nové listenery na novú trasu
+    
+script.js: detectuje currentRouteId zmenu
+    └─→ zmení CURRENT_ROUTE_ID
+    └─→ loadRoute(newId)
+    └─→ znova zavolá attachStepsListener()
+Reset Trasy
+text
+User klikne "Reset" na mobile alebo webe
+    ↓
+Firebase: routes/<id>/resetRequest = timestamp
+    ↓
+Web: detectuje zmenu, zavolá performReset()
+    └─→ routes/<id>/steps = 0
+    └─→ panorama na START
+    └─→ mapa na START
+    
+MainActivity: detectuje zmenu, zavolá resetRoute()
+    └─→ routes/<id>/steps = 0
+    └─→ position = 1
+✅ Kľúčové Logické Zmeny (od pôvodnej verzie)
+Aspekt	Pôvodne	Teraz
+Kroky	Globálne steps (všetky trasy zdieľali)	routes/<id>/steps (per-trasa)
+baseSteps	Resetovalo sa pri zmene trasy	NIKDY sa neresetuje – globálny pedometer
+Zápis krokov	database.ref('steps')	routes/<activeRouteId>/steps
+Reset	Zmenoval baseStepsMobile	Priamo routes/<id>/steps = 0
+Prepínanie trás	Kroky sa strácali/násobili	Kroky ostávajú na svojej trase
+������ Problem, Ktorý sa Vyriešil
+Popis: Keď si mal trasu 2 so 50 krokmi, prepol si sa na trasu 1, naspäť na trasu 2, a kroky sa znulovali pri pokračovaní.
+
+Príčina: baseSteps sa resetovalo pri zmene activeRouteId, čím sa prišlo o referenčný bod pedometra.
+
+Riešenie: baseSteps sa nikdy neresetuje – ostáva globálny počas celej doby chodu aplikácie.
+
+������ Súbory na Úpravách (Aktuálne Verzie)
+✅ MainActivity.kt – počúva routes/<id>/steps, čítajúci model
+
+✅ StepService.kt – píše do routes/<activeRouteId>/steps, baseSteps sa neresetuje
+
+✅ script.js – počúva routes/<id>/steps, attachStepsListener()
+
+Projekt je funkčný. Kroky teraz ostávajú na svojich trasách a nepribúdajú sa navzájom.

@@ -1,0 +1,451 @@
+/* =========================================
+   1. ZÁKLADNÉ NASTAVENIA & MODERNE PREMENNÉ - ZACHOVANÉ
+   ========================================= */
+:root {
+    --primary: #1565C0;
+    --primary-light: rgba(21, 101, 192, 0.1);
+    --accent: #FF9800;
+    --success: #4CAF50;
+    --text-main: #2c3e50;
+    --glass-bg: rgba(255, 255, 255, 0.85);
+    --glass-border: rgba(255, 255, 255, 0.4);
+    --shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body { 
+    font-family: 'Roboto', 'Segoe UI', sans-serif; 
+    background: #000; 
+    overflow: hidden; 
+    color: var(--text-main); 
+}
+
+.material-icons {
+    font-family: 'Material Icons';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;
+    line-height: 1;
+    display: inline-block;
+    text-transform: none;
+    letter-spacing: normal;
+    word-wrap: normal;
+    white-space: nowrap;
+    direction: ltr;
+    vertical-align: middle;
+}
+
+/* =========================================
+   2. HLAVIČKA - ZACHOVANÉ
+   ========================================= */
+h1 {
+    position: absolute; top: 15px; left: 50%; transform: translateX(-50%);
+    z-index: 1000; background: var(--glass-bg);
+    padding: 12px 40px; border-radius: 50px;
+    box-shadow: var(--shadow); font-weight: 900; font-size: 24px;
+    backdrop-filter: blur(10px); border: 1px solid var(--glass-border);
+}
+
+#routeInfoPanel {
+    position: absolute; top: 80px; left: 50%; transform: translateX(-50%);
+    z-index: 1000; background: rgba(0, 0, 0, 0.8); color: white;
+    padding: 8px 25px; border-radius: 50px; display: flex; gap: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3); font-size: 13px; font-weight: 500;
+}
+.route-value { color: #81C784; font-weight: 800; }
+
+/* =========================================
+   3. OVLÁDANIE (Dole vycentrované) - ZACHOVANÉ
+   ========================================= */
+#viewControls {
+    position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
+    z-index: 1000; display: flex; gap: 10px;
+    background: var(--glass-bg); padding: 10px;
+    border-radius: 20px; box-shadow: var(--shadow);
+    backdrop-filter: blur(10px); border: 1px solid var(--glass-border);
+}
+
+.toggle-btn {
+    padding: 10px 18px; border: none; background: white;
+    border-radius: 12px; cursor: pointer; font-weight: 700; color: #546e7a;
+    transition: 0.3s; font-size: 13px; border: 1px solid #eee;
+}
+.toggle-btn:hover { background: #f8fafc; }
+.toggle-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+/* =========================================
+   4. MAPY (Layout) - UPRAVENÉ PRE VR
+   ========================================= */
+#mapsContainer { 
+    width: 100vw; height: 100vh; position: absolute; top: 0; left: 0; 
+    display: flex; z-index: 1; 
+}
+
+#vrArrow {
+    transition: transform 0.1s linear; /* Zabezpečí plynulý pohyb šípky pri ťahaní myšou */
+}
+
+#panorama { 
+    height: 100vh; 
+    flex: 1; 
+    background: #222; 
+    transition: width 0.3s ease;
+    position: relative; 
+}
+
+#map { height: 100vh; border-left: 4px solid white; transition: width 0.3s ease; }
+
+.hidden { display: none !important; }
+
+/* ������ UPRAVENÉ: Pravidlá pre pohlcujúci VR režim */
+#panorama:fullscreen {
+    width: 100vw !important;
+    height: 100vh !important;
+}
+
+/* Zobrazenie tlačidla ukončenia iba keď je panorama na celú obrazovku */
+#panorama:fullscreen #exitVR,
+#panorama:-webkit-full-screen #exitVR {
+    display: block !important;
+}
+
+/* Skrytie rušivých prvkov Google máp vo VR režime */
+:fullscreen .gm-style-cc, 
+:fullscreen .gmnoprint,
+:fullscreen .gm-style-padding-query {
+    display: none !important;
+}
+
+/* =========================================
+    5. BOČNÉ PANELY - MODERNE UPRAVENÉ
+   ========================================= */
+#statsPanel, #guidePanel {
+    position: absolute; top: 140px; z-index: 500;
+    background: rgba(255, 255, 255, 0.9); /* Jemne priesvitné pozadie */
+    padding: 25px;
+    border-radius: 28px; width: 340px; 
+    max-height: calc(100vh - 200px);
+    overflow-y: auto; 
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(15px); 
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    transition: transform 0.4s ease, opacity 0.4s ease;
+}
+
+#statsPanel { left: 20px; }
+#guidePanel { right: 20px; }
+
+h3 { 
+    font-weight: 900; text-transform: uppercase; font-size: 14px; 
+    letter-spacing: 1.5px; color: var(--primary); margin-bottom: 20px; 
+    border-bottom: 2px solid var(--primary-light); padding-bottom: 8px;
+}
+
+/* --- LEVEL BOX (Modrý s žltým progresom) --- */
+#levelBox { 
+    background: linear-gradient(135deg, #1565C0, #0D47A1); 
+    padding: 20px; border-radius: 20px; margin-bottom: 20px; 
+    box-shadow: 0 6px 20px rgba(21, 101, 192, 0.3);
+    color: white;
+}
+.level-header { display: flex; justify-content: space-between; font-weight: 900; font-size: 17px; }
+#userLevel { color: #FFD600; } /* Žltý text levelu */
+#userRank { color: rgba(255, 255, 255, 0.8); font-size: 12px; font-weight: 700; text-transform: uppercase; }
+
+.level-progress-bg { height: 10px; background: rgba(255, 255, 255, 0.15); border-radius: 10px; overflow: hidden; margin: 12px 0; }
+.level-progress-fill { 
+    height: 100%; 
+    background: #FFD600; /* Žltý bar pre Level */
+    box-shadow: 0 0 10px rgba(255, 214, 0, 0.5);
+    transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1); 
+}
+#levelXpText { font-size: 11px; color: rgba(255, 255, 255, 0.7); text-align: right; font-weight: 900; }
+
+/* --- RIADKY ŠTATISTÍK --- */
+.stat-row { 
+    display: flex; justify-content: space-between; 
+    margin: 12px 0; padding-bottom: 8px; 
+    border-bottom: 1px solid rgba(0,0,0,0.05); 
+}
+.stat-label { font-size: 11px; font-weight: 700; color: #78909c; text-transform: uppercase; }
+.stat-value { font-weight: 900; font-size: 16px; color: #2c3e50; }
+#calories { color: #FF5722; }
+#steps { color: var(--primary); }
+
+/* --- ������ ACHIEVEMENT BOX (Najbližší cieľ - Zelený bar) --- */
+.achievement-box { 
+    background: #f8fafc; 
+    padding: 18px; border-radius: 20px; 
+    margin: 20px 0; border: 1px solid #e2e8f0;
+}
+.achievement-box .stat-label { color: #1565C0; margin-bottom: 10px; display: block; }
+.goal-title { font-weight: 900; font-size: 17px; color: #1e293b; margin-bottom: 10px; }
+
+/* Kontajner a zelený bar k POI cieľu */
+.progress-container { 
+    height: 12px; background: #e2e8f0; 
+    border-radius: 10px; overflow: hidden; margin: 12px 0; 
+}
+.progress-bar { 
+    height: 100%; 
+    background: linear-gradient(90deg, #4CAF50, #81C784); /* Zelený bar pre POI */
+    box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); 
+}
+
+.goal-stats { font-size: 12px; font-weight: 800; color: #64748b; display: flex; justify-content: space-between; }
+
+/* --- TLAČIDLÁ --- */
+#btnShowLevels, #btnShowGoals, .level-list-btn { 
+    width: 100%; margin-top: 15px; padding: 14px; border-radius: 15px;
+    border: none; background: var(--primary); color: white;
+    font-weight: 900; font-size: 11px; cursor: pointer; transition: 0.3s;
+    text-transform: uppercase; letter-spacing: 1px;
+    box-shadow: 0 4px 12px rgba(21, 101, 192, 0.2);
+}
+#btnShowLevels:hover { background: #0D47A1; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(21, 101, 192, 0.3); }
+
+/* --- SPRIEVODCA (POI položky) --- */
+.poi-item { 
+    background: white; border: 1px solid #f1f5f9; padding: 18px; margin-bottom: 12px; 
+    border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); 
+    display: flex; flex-direction: column; gap: 8px; transition: 0.3s;
+}
+.poi-item.unlocked { border-left: 6px solid #4CAF50; background: #f0fdf4; }
+/* =========================================
+   6. MODÁLY - ZACHOVANÉ
+   ========================================= */
+.modal { 
+    position: fixed; inset: 0; background: rgba(0,0,0,0.6); 
+    z-index: 2000; display: none; align-items: center; 
+    justify-content: center; backdrop-filter: blur(5px); 
+}
+.modal:not(.hidden) { display: flex; }
+
+.modal-content { 
+    background: white; width: 90%; max-width: 480px; border-radius: 30px; 
+    padding: 25px; max-height: 85vh; overflow-y: auto; box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+}
+
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+.close-btn { cursor: pointer; font-size: 30px; font-weight: bold; color: #999; line-height: 1; transition: 0.2s; }
+.close-btn:hover { color: #d32f2f; }
+
+.level-card { padding: 15px; border-radius: 18px; border: 1px solid #e2e8f0; margin-bottom: 12px; display: flex; align-items: center; gap: 15px; }
+.level-card.current { border: 2px solid var(--primary); background: #e3f2fd; }
+.lvl-number { min-width: 45px; height: 45px; background: #f1f5f9; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; color: #546e7a; }
+.level-card.unlocked .lvl-number { background: #dcfce7; color: #166534; }
+.level-card.current .lvl-number { background: var(--primary); color: white; }
+
+.lvl-req { min-width: 85px; text-align: right; line-height: 1.2; flex-shrink: 0; }
+.lvl-req div:nth-child(2) { font-weight: 900; font-size: 15px; color: var(--text-main); }
+
+.achievement-card { padding: 14px; border-radius: 15px; margin-bottom: 10px; display: flex; align-items: center; gap: 15px; border: 1px solid #eee; }
+.achievement-card.unlocked { background: #fff8e1; border-color: #ffecb3; }
+.ach-icon { font-size: 22px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: #f1f5f9; }
+.achievement-card.unlocked .ach-icon { background: #ffc107; color: white; }
+
+/* =========================================
+   7. NOTIFIKÁCIE (TOASTY) - ������ AKTUALIZOVANÉ
+   ========================================= */
+#toast-container {
+    position: absolute;
+    top: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 99999; /* ������ Zvýšené na maximum kvôli Google Maps vrstvám */
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.toast {
+    background: rgba(21, 101, 192, 0.95);
+    color: white;
+    padding: 14px 28px;
+    border-radius: 50px;
+    margin-bottom: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    min-width: 320px;
+    border: 2px solid rgba(255,255,255,0.3);
+    animation: slideDownIn 0.5s cubic-bezier(0.18, 0.89, 0.32, 1.28), 
+               fadeOut 0.5s ease-in 4.5s forwards;
+}
+
+.toast i { 
+    color: #FFD600; 
+    font-size: 32px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.toast b { color: #81C784; } /* Zvýraznenie názvu v toaste */
+
+@keyframes slideDownIn {
+    from { opacity: 0; transform: translateY(-60px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; transform: scale(1); }
+    to { opacity: 0; transform: scale(0.9); }
+}
+
+/* =========================================
+   RESPONZIVITA - ZACHOVANÉ
+   ========================================= */
+@media (max-width: 1024px) {
+    #panorama { width: 100%; }
+    #map { display: none; }
+    .side-panel { width: 300px; padding: 15px; top: 120px; }
+    #viewControls { bottom: 20px; padding: 5px; }
+    .toggle-btn { padding: 8px 12px; font-size: 11px; }
+}
+
+/* Oprava pre imerzné VR zobrazenie na Meta Quest 3 */
+#panorama:fullscreen {
+    width: 100vw !important;
+    height: 100vh !important;
+    display: block !important;
+}
+
+#panorama:fullscreen #exitVR {
+    display: block !important;
+}
+
+/* =========================================
+    8. VR HUD - OPRAVA PRE META QUEST 3
+   ========================================= */
+
+/* KĽÚČOVÉ: Vnútené zobrazenie HUDu, keď je panorama vo Fullscreene */
+#panorama:fullscreen .vr-hud,
+#panorama:-webkit-full-screen .vr-hud {
+    display: flex !important;      /* Prebije triedu .hidden */
+    visibility: visible !important;
+    opacity: 1 !important;
+    z-index: 2147483647 !important; /* Absolútne maximum, aby to mapa neprekryla */
+}
+
+.vr-hud {
+    position: absolute;
+    top: 50px;
+    left: 50px;
+    /* Z-index musí byť extrémne vysoký aj tu */
+    z-index: 2147483647; 
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 20px 25px;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    font-size: 26px; /* Väčšie písmo pre VR šošovky */
+    font-weight: 900;
+    pointer-events: none;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
+
+/* Štýl riadkov v HUD */
+.vr-hud div {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.vr-hud i {
+    font-size: 32px;
+}
+/* =========================================
+   9. KOMPLEXNÝ VR HUD (LEVELY & PROGRES)
+   ========================================= */
+
+/* Zabezpečenie viditeľnosti komplexného panela vo Fullscreene */
+#panorama:fullscreen .vr-hud-overlay,
+#panorama:-webkit-full-screen .vr-hud-overlay {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    z-index: 2147483647 !important;
+}
+
+.vr-hud-overlay {
+    position: absolute;
+    top: 30px;
+    left: 30px;
+    z-index: 2147483647;
+    background: rgba(0, 0, 0, 0.85);
+    color: white;
+    padding: 20px;
+    border-radius: 20px;
+    width: 350px; /* Dostatočná šírka pre level texty */
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    pointer-events: none;
+}
+
+/* Hlavička s levelom */
+.vr-hud-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 22px;
+    font-weight: 900;
+    margin-bottom: 15px;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+    padding-bottom: 10px;
+}
+
+.vr-hud-header i { color: #FFD600; font-size: 28px; }
+
+/* Štatistiky pod sebou */
+.vr-hud-stats-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.vr-hud-stat {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+/* Sekcia s progres barmi */
+.vr-hud-progress-sec {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.vr-hud-label {
+    font-size: 14px;
+    text-transform: uppercase;
+    color: #aaa;
+    font-weight: 900;
+}
+
+/* Štýl progres barov */
+.vr-hud-bar-bg {
+    height: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.vr-hud-bar-fill {
+    height: 100%;
+    background: #1565C0; /* Modrá pre Level */
+    width: 0%;
+    transition: width 0.5s ease;
+}
+
+.vr-hud-bar-fill.goal {
+    background: #4CAF50; /* Zelená pre Cieľ */
+}

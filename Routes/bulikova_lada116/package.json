@@ -1,0 +1,16 @@
+{
+  "name": "bulikova_lada116",
+  "version": "1.0.0",
+  "description": "",
+  "main": "generate_bulikova_lada116.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@mapbox/polyline": "^1.2.1",
+    "node-fetch": "^3.3.2"
+  }
+}

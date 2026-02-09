@@ -1,0 +1,23 @@
+Máš rozbehnutý projekt „VR Turista“, kde reálne kroky z Android telefónu posúvajú používateľa po Street View alebo po pevne danej trase na mape.​
+
+Čo už máte hotové
+Android krokomer v Kotline: aplikácia beží na tvojom telefóne, používa senzor krokov (TYPE_STEP_COUNTER/DETECTOR), zobrazuje počet krokov a má povolenie ACTIVITY_RECOGNITION.​
+
+Prepojenie na Firebase: kroky sa posielajú do Firebase Realtime Database (napr. na kľúč steps), takže web ich vie čítať v reálnom čase.​
+
+Web so Street View: existuje stránka s Google Maps JavaScript API, zobrazuje Street View panorámu, tlačidlá na pohyb a text „Kroky z mobilu: X“, ktorý sa aktualizuje podľa Firebase.​
+
+Väzba krokov na pohyb: skript sleduje zmenu hodnoty steps a každých 12 krokov zavolá moveForward(), takže panoráma sa posúva po trase podľa reálneho chodenia.​
+
+Trasa zadaná ako body: namiesto voľného posunu podľa smeru už používaš pole routePoints a index currentRouteIndex, takže sa dá ísť len po vopred danej trase a po poslednom bode sa ďalší pohyb zastaví.​
+
+Začiatok na Bulíkova 15: prvý bod trasy je nastavený na súradnice Bulíkova 15 v Petržalke, takže Street View štartuje pri tvojom dome.​​
+
+Cieľ a hláška o cieli: v HTML máš <div id="status"> a v moveForward() sa po dosiahnutí posledného bodu trasy zobrazí text „Si v cieli trasy!“, pričom pri kroku späť sa správa vymaže.​
+
+Vyriešené otázky okolo API a cien: rozumieš, že panorámy (Dynamic Street View) sa účtujú za načítanie 360° bodu, Directions/Routes API za výpočet trasy, ale vďaka mesačnému kreditu sa malé hobby projekty typicky zmestia do bezplatného limitu.​
+
+Čo ste navrhli ako ďalší krok
+Realistické trasy z Directions/Routes API: chceš mať skutočné trasy (napr. Bulíkova 15 → Eurovea) s bodmi, ktoré detailne sledujú cestu; polyline sa získa raz cez Directions/Routes API a potom sa dekóduje na zoznam lat/lng.​
+
+Ukladanie trás do externých súborov
