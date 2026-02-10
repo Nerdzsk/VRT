@@ -1,0 +1,3 @@
+   python -m http.server 8000
+   ngrok http 8000
+   https://sang-acanthous-also.ngrok-free.dev/

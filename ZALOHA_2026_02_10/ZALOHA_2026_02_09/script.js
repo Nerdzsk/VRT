@@ -1,26 +1,3 @@
-// ====== Helper funkcie pre ≈°√≠pku na mape ======
-function getHeading(from, to) {
-    // Google Maps API u≈æ poskytuje computeHeading, ale obal√≠me pre konzistentnos≈•
-    return google.maps.geometry.spherical.computeHeading(from, to);
-}
-
-function createArrowSvg(rotation) {
-    // SVG ≈°√≠pka, otoƒçen√° podƒæa rotation (v stup≈àoch), upraven√° o -90¬∞ aby smerovala po ceste
-    const svgNS = "http://www.w3.org/2000/svg";
-    const svg = document.createElementNS(svgNS, "svg");
-    svg.setAttribute("width", "40");
-    svg.setAttribute("height", "40");
-    svg.setAttribute("viewBox", "0 0 40 40");
-    svg.style.transform = `rotate(${rotation - 90}deg)`;
-    svg.style.transition = "transform 0.2s";
-    const arrow = document.createElementNS(svgNS, "polygon");
-    arrow.setAttribute("points", "20,5 30,35 20,28 10,35");
-    arrow.setAttribute("fill", "#FFD600");
-    arrow.setAttribute("stroke", "#333");
-    arrow.setAttribute("stroke-width", "2");
-    svg.appendChild(arrow);
-    return svg;
-}
 // ==========================================
 // 1. KONFIGUR√ÅCIA FIREBASE (ZACHOVAN√â)
 // ==========================================
@@ -152,7 +129,7 @@ let maxDailySteps = 0;
 let currentRouteSteps = 0; 
 let maxTriggeredSteps = 0;  
 
-let isVRActive = false; // ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ D√îLE≈ΩIT√â: Mus√≠ tu by≈• pre VR
+let isVRActive = false; // Ì†ΩÌ¥• D√îLE≈ΩIT√â: Mus√≠ tu by≈• pre VR
 
 let lastSeenTriggeredStep = -1;
 let isFirstLoadForToasts = true;
@@ -247,7 +224,7 @@ if (btnVR) {
         isVRActive = true;
         updateLevelUI();
 
-        // ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ SYNCHRONIZ√ÅCIA: Hneƒè pri vstupe do VR vyn√∫time "pohƒæad vpred" (0,0,0)
+        // Ì†ΩÌ¥• SYNCHRONIZ√ÅCIA: Hneƒè pri vstupe do VR vyn√∫time "pohƒæad vpred" (0,0,0)
 // Keƒè≈æe skybox je u≈æ na webe zrovnan√Ω s cestou, toto ≈•a natoƒç√≠ priamo na ≈àu.
         const cameraEl = document.getElementById('vrCamera');
         if (cameraEl && cameraEl.components['look-controls']) {
@@ -258,7 +235,7 @@ if (btnVR) {
     // Pre istotu resetujeme aj samotn√Ω atrib√∫t entity
         cameraEl.setAttribute('rotation', '0 0 0');
         }
-        // ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ AKTUALIZ√ÅCIA HUD PANELA
+        // Ì†ΩÌ¥• AKTUALIZ√ÅCIA HUD PANELA
         const vrHud = document.getElementById('vrHud');
         const vrContent = document.getElementById('vrHudContent');
         const vrIcon = document.getElementById('vrToggleIcon');
@@ -273,7 +250,7 @@ if (btnVR) {
             setupVrToggle();
         }
 
-        // ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ AKTIV√ÅCIA A-FRAME RE≈ΩIMU A POSILNEN√Å POISTKA SENZOROV
+        // Ì†ΩÌ¥• AKTIV√ÅCIA A-FRAME RE≈ΩIMU A POSILNEN√Å POISTKA SENZOROV
         const scene = document.querySelector('a-scene');
         if (scene) {
             // POISTKA: Reset a vyn√∫ten√© prepojenie kamery so senzormi headsetu
@@ -297,7 +274,7 @@ if (btnVR) {
             }
         }
 
-        // ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ VYN√öTEN√Å AKTUALIZ√ÅCIA D√ÅT HNEƒé PRI ≈†TARTE
+        // Ì†ΩÌ¥• VYN√öTEN√Å AKTUALIZ√ÅCIA D√ÅT HNEƒé PRI ≈†TARTE
         const vrSteps = document.getElementById('vrStepsDisplay');
         const vrCals = document.getElementById('vrCaloriesDisplay');
         const vrDist = document.getElementById('vrDistanceDisplay');
@@ -568,13 +545,6 @@ database.ref(`dailyStats/${dailyKey}/steps`).on('value', (snapshot) => {
     if (vr3dDaily) {
         vr3dDaily.setAttribute('value', `Dnes: ${formatNum(val)} kr.`);
     }
-
-    // NOV√â: Aktualiz√°cia sp√°len√Ωch kal√≥ri√≠ za dne≈°ok v 3D VR
-    const vr3dDailyCals = document.getElementById('vr3dDailyCals');
-    if (vr3dDailyCals) {
-        const dailyCals = Math.floor(val * 0.04 * (userWeight/70));
-        vr3dDailyCals.setAttribute('value', `Dnes: ${dailyCals} kcal`);
-    }
 });
 
 function checkAchievements() {
@@ -637,7 +607,7 @@ function attachRouteListeners(id) {
         let idx = Math.floor(steps / (stepsPerMove || 10));
         if(idx >= routePoints.length) idx = routePoints.length - 1;
 
-        // ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ OPRAVA ≈†TATIST√çK NA WEBE (Obr√°zok 1)
+        // Ì†ΩÌ¥• OPRAVA ≈†TATIST√çK NA WEBE (Obr√°zok 1)
         if(statsEl.pos) statsEl.pos.innerText = `${idx} / ${routePoints.length}`;
         if(statsEl.dist) statsEl.dist.innerText = traveledKm + " km";
         if(document.getElementById('percentage') && routePoints.length > 0) {
@@ -648,7 +618,7 @@ function attachRouteListeners(id) {
             moveVirtualPlayer(idx, steps); 
             if (routePoints[idx]) {
                 const pos = { lat: routePoints[idx].lat, lng: routePoints[idx].lng };
-                // ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ OPRAVA: Rozdelenie farieb trasy na mape
+                // Ì†ΩÌ¥• OPRAVA: Rozdelenie farieb trasy na mape
                 if (traveledPolyline) traveledPolyline.setPath(routePoints.slice(0, idx + 1));
                 if (remainingPolyline) remainingPolyline.setPath(routePoints.slice(idx));
                 if (panorama && !isVRActive) {                          
@@ -665,7 +635,7 @@ function attachRouteListeners(id) {
                 panorama.setPov({ heading: targetHeading, pitch: 0 });
             }
         }
-                if (mapMarker) { mapMarker.position = pos; if (map) map.panTo(pos); }
+                if (mapMarker) { mapMarker.setPosition(pos); if (map) map.panTo(pos); }
             }
             lastRenderedIndex = idx; 
         }
@@ -720,12 +690,18 @@ function updatePoiMarkersOnMap() {
         const point = routePoints[pointIdx];
         if (point) {
             const isReached = currentRouteSteps >= poi.requiredSteps;
-            const { AdvancedMarkerElement } = google.maps.marker;
-            const marker = new AdvancedMarkerElement({
-                map: map,
-                position: { lat: point.lat, lng: point.lng },
-                title: poi.title
-                // Custom ikonku m√¥≈æe≈° prida≈• cez element property
+            const marker = new google.maps.Marker({ 
+                position: { lat: point.lat, lng: point.lng }, 
+                map: map, 
+                title: poi.title, // Ì†ΩÌ¥• PRIDAN√â: Teraz sa zobraz√≠ n√°zov pri prejden√≠ my≈°ou
+                icon: { 
+                    path: google.maps.SymbolPath.CIRCLE, 
+                    scale: 6, 
+                    fillColor: isReached ? '#4CAF50' : '#FFD600', 
+                    fillOpacity: 1, 
+                    strokeColor: '#333', 
+                    strokeWeight: 1 
+                } 
             });
             poiMarkers.push(marker);
         }
@@ -741,7 +717,7 @@ function moveVirtualPlayer(idx, steps) {
         if (status === "OK") {
             const panoId = data.location.pano;
             
-            // ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ OPRAVA 1: Tu mus√≠me definova≈• panoCenterHeading z d√°t od Google
+            // Ì†ΩÌ¥• OPRAVA 1: Tu mus√≠me definova≈• panoCenterHeading z d√°t od Google
             const panoCenterHeading = (data.tiles && data.tiles.centerHeading) ? data.tiles.centerHeading : 0;
             
             const sky = document.getElementById('skybox');
@@ -778,7 +754,7 @@ function moveVirtualPlayer(idx, steps) {
                 }
             }
 
-            // ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ OPRAVA 2: Natoƒçenie nulov√©ho bodu a reset kamery
+            // Ì†ΩÌ¥• OPRAVA 2: Natoƒçenie nulov√©ho bodu a reset kamery
             if (idx < routePoints.length - 1) {
                 const nextPt = routePoints[idx+1];
                 const targetHeading = google.maps.geometry.spherical.computeHeading(
@@ -792,7 +768,7 @@ function moveVirtualPlayer(idx, steps) {
                 // Nastav√≠me rot√°ciu sf√©ry
                 sky.setAttribute('rotation', `0 ${finalSkyRotation} 0`);
 
-                // ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ Reset kamery (len ak sme vo VR), aby si sa pozeral na 0 (teda na cestu)
+                // Ì†ΩÌ¥• Reset kamery (len ak sme vo VR), aby si sa pozeral na 0 (teda na cestu)
                 const cameraEl = document.getElementById('vrCamera');
                 if (cameraEl && cameraEl.components['look-controls'] && isVRActive) {
                     cameraEl.components['look-controls'].yawObject.rotation.y = 0;
@@ -819,42 +795,20 @@ function initMaps(routeId) {
     if(statsEl.totalDist) statsEl.totalDist.innerText = `${totalKm} km`;
 
     if(!map) {
-        map = new google.maps.Map(divMap, {
-            center: start,
-            zoom: 15,
-            streetViewControl: false,
-            mapId: 'DEMO_MAP_ID' // demo mapId, pre pln√∫ podporu AdvancedMarkerElement
+        map = new google.maps.Map(divMap, { center: start, zoom: 15, streetViewControl: false });
+        mapMarker = new google.maps.Marker({ position: start, map: map, icon: { path: google.maps.SymbolPath.CIRCLE, scale: 8, fillColor: '#1565C0', fillOpacity: 1, strokeColor: 'white', strokeWeight: 2 } });
+        panorama = new google.maps.StreetViewPanorama(divPanorama, { 
+            position: start, 
+            pov: { heading: initialHeading, pitch: 0 }, // Dynamick√Ω ≈°tart
+            zoom: 1, 
+            addressControl: false,
+            clickToGo: false 
         });
-        const { AdvancedMarkerElement } = google.maps.marker;
-        // Dynamick√° ≈°√≠pka
-        let initialRotation = 0;
-        if (routePoints.length > 1) {
-            const from = new google.maps.LatLng(routePoints[0].lat, routePoints[0].lng);
-            const to = new google.maps.LatLng(routePoints[1].lat, routePoints[1].lng);
-            initialRotation = getHeading(from, to);
-        }
-        const arrowDiv = document.createElement('div');
-        arrowDiv.appendChild(createArrowSvg(initialRotation));
-        mapMarker = new AdvancedMarkerElement({
-            map: map,
-            position: start,
-            title: '≈†tart',
-            content: arrowDiv
-        });
-        // Funkcia na aktualiz√°ciu smeru ≈°√≠pky podƒæa najbli≈æ≈°ej poz√≠cie
-        mapMarker._updateArrowRotation = function(idx) {
-            if (!routePoints[idx] || !routePoints[idx + 1]) return;
-            const from = new google.maps.LatLng(routePoints[idx].lat, routePoints[idx].lng);
-            const to = new google.maps.LatLng(routePoints[idx + 1].lat, routePoints[idx + 1].lng);
-            const heading = getHeading(from, to);
-            arrowDiv.innerHTML = '';
-            arrowDiv.appendChild(createArrowSvg(heading));
-        };
-        mapMarker._updateArrowRotation(0);
-        // ...existing code...
+                map.setStreetView(panorama);
+        panorama.addListener('pov_changed', updateVrArrow);
     }
     
-    // NOV√â: Inicializ√°cia dvoch ƒçiar na mape
+    // Ì†ΩÌ¥• NOV√â: Inicializ√°cia dvoch ƒçiar na mape
     if(traveledPolyline) traveledPolyline.setMap(null);
     if(remainingPolyline) remainingPolyline.setMap(null);
     traveledPolyline = new google.maps.Polyline({ path: [], strokeColor: '#4CAF50', strokeOpacity: 1.0, strokeWeight: 6, map: map });

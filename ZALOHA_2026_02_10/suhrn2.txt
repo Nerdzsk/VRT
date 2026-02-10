@@ -1,0 +1,164 @@
+Z tohto vlákna budeš pri ďalšom pokračovaní potrebovať hlavne tieto fakty:
+
+Web (VR Turista – Street View)
+Webová stránka beží na lokálnom serveri a používa Google Maps JavaScript API so Street View (vrátane libraries=geometry).​
+
+Trasa sa načítava z JSON súboru route_bulikova_eurovea.json, ktorý obsahuje:
+
+pole bodov points (lat/lng),
+
+hodnotu stepsPerMove (napr. 23),
+
+voliteľne názov trasy name.​​
+
+Premenné v script.js:
+
+routePoints, currentRouteIndex, currentPos, currentHeading, STEPS_PER_MOVE, flag routeLoaded.
+
+Kroky: baseSteps, lastStepCount, lastStepCheckpoint.
+
+Po načítaní trasy (loadRoute()):
+
+uloží body do routePoints,
+
+nastaví STEPS_PER_MOVE = data.stepsPerMove,
+
+resetuje currentRouteIndex, currentPos, lastStepCount, lastStepCheckpoint, baseSteps.​​
+
+Firebase web listener:
+
+js
+database.ref('steps').on('value', (snapshot) => {
+    const rawSteps = snapshot.val() || 0;
+    if (!routeLoaded || !routePoints.length) {
+        document.getElementById('mobileSteps').textContent = rawSteps;
+        return;
+    }
+    if (baseSteps === null) baseSteps = rawSteps;
+    const steps = rawSteps - baseSteps;
+    document.getElementById('mobileSteps').textContent = steps;
+
+    const diff = steps - lastStepCheckpoint;
+    const moves = Math.floor(diff / STEPS_PER_MOVE);
+    console.log('steps:', steps, 'checkpoint:', lastStepCheckpoint, 'diff:', diff, 'moves:', moves);
+
+    if (steps > lastStepCheckpoint && moves > 0) {
+        for (let i = 0; i < moves; i++) moveForward();
+        lastStepCheckpoint += moves * STEPS_PER_MOVE;
+    }
+    lastStepCount = steps;
+});
+moveForward():
+
+posúva sa striktne po bodoch v routePoints,
+
+pred posunom vypočíta heading medzi aktuálnym a nasledujúcim bodom pomocou google.maps.geometry.spherical.computeHeading(from, to) a nastaví panorama.setPov({ heading, pitch: 0 }), takže Street View sa pri zákrutách otáča po smere trasy.​
+
+moveBackward() robí to isté opačným smerom (heading z aktuálneho bodu na predchádzajúci).
+
+Niektoré počiatočné body trasy sú veľmi blízko seba, takže prvé posuny sú vizuálne malé – diskutovalo sa aj o prípadnom routePoints = routePoints.slice(2) ako rýchlom odrezaní prvých bodov.
+
+Android – krokomer a foreground služba
+Projekt: jednoduchá Compose appka VR turista.
+
+Používa Firebase Realtime Database, uzol steps (int).​​
+
+MainActivity (aktuálny stav):
+
+už neimplementuje SensorEventListener – reálne počítanie krokov robí služba,
+
+má stepsState = mutableStateOf(0),
+
+v onCreate:
+
+enableEdgeToEdge(),
+
+spúšťa foreground službu:
+
+kotlin
+val serviceIntent = Intent(this, StepService::class.java)
+ContextCompat.startForegroundService(this, serviceIntent)
+vytvorí listener na Firebase.database.reference.child("steps"), ktorý pri onDataChange uloží hodnotu do stepsState,
+
+v Compose UI zobrazuje Greeting("Kroky: $stepsState").​​
+
+StepService : Service(), SensorEventListener:
+
+v onCreate():
+
+vytvorí notifikačný kanál (channelId = "step_service_channel", názov „VR Turista krokomer“, IMPORTANCE_LOW),
+
+cez getSystemService(NotificationManager::class.java) zaregistruje kanál,
+
+spustí startForeground(notificationId, notification) s notifikáciou „VR Turista – Počítam kroky…“, ikonou R.mipmap.ic_launcher,
+
+inicializuje sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager,
+
+získa stepSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER) a ak existuje, zaregistruje listener so SENSOR_DELAY_NORMAL.​
+
+v onSensorChanged:
+
+číta event.values[0] (celkový počet krokov od bootu),
+
+na prvú hodnotu nastaví baseSteps,
+
+počíta current = (total - baseSteps).toInt(),
+
+zapisuje do Firebase:
+
+kotlin
+val db = FirebaseDatabase.getInstance().reference
+db.child("steps").setValue(current)
+onStartCommand vracia START_STICKY,
+
+v onDestroy odregisruje listener.
+
+Manifest a povolenia
+AndroidManifest.xml (skrátene):
+
+xml
+<manifest ...>
+    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_HEALTH" />
+
+    <application
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/Theme.VRTurist">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.VRTurist">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <service
+            android:name=".StepService"
+            android:exported="false"
+            android:foregroundServiceType="health" />
+    </application>
+</manifest>
+Android Studio ešte ukazuje len žlté varovania (namespace, justification), build však prechádza.
+
+Dôležité poznámky pre ďalšie vlákno
+Hra funguje end-to-end:
+
+telefón v foreground službe počíta kroky a posiela ich do Firebase,
+
+web ich číta, normalizuje a na základe nich posúva Street View po vopred vygenerovanej trase, pričom heading sa automaticky orientuje podľa smeru trasy.​
+
+Keď webová stránka nie je otvorená, JS listenery nebežia, lokálny server len „číha“ a nevolá žiadne API; zapisuje len telefón.​
+
+V ďalšom vlákne chceš:
+
+rozšíriť index.html a script.js o podrobnejší informačný panel (napr. dĺžka trasy, aktuálna pozícia, ubehnutá vzdialenosť, možno čas),
+
+pridať vedľa Street View aj klasickú Google mapu s polylínou trasy a markerom aktuálnej pozície (side‑by‑side layout podľa príkladu „Street View Side-By-Side“ / kombinácia Map + StreetView).​
+
+Tento súhrn si môžeš uložiť ako samostatný markdown/text súbor a v ďalšom vlákne ho priložiť; stačí mi ho potom dať prečítať a môžeme rovno nadväzovať na úpravy index.html a mapového layoutu.

@@ -1,26 +1,3 @@
-// ====== Helper funkcie pre šípku na mape ======
-function getHeading(from, to) {
-    // Google Maps API už poskytuje computeHeading, ale obalíme pre konzistentnosť
-    return google.maps.geometry.spherical.computeHeading(from, to);
-}
-
-function createArrowSvg(rotation) {
-    // SVG šípka, otočená podľa rotation (v stupňoch), upravená o -90° aby smerovala po ceste
-    const svgNS = "http://www.w3.org/2000/svg";
-    const svg = document.createElementNS(svgNS, "svg");
-    svg.setAttribute("width", "40");
-    svg.setAttribute("height", "40");
-    svg.setAttribute("viewBox", "0 0 40 40");
-    svg.style.transform = `rotate(${rotation - 90}deg)`;
-    svg.style.transition = "transform 0.2s";
-    const arrow = document.createElementNS(svgNS, "polygon");
-    arrow.setAttribute("points", "20,5 30,35 20,28 10,35");
-    arrow.setAttribute("fill", "#FFD600");
-    arrow.setAttribute("stroke", "#333");
-    arrow.setAttribute("stroke-width", "2");
-    svg.appendChild(arrow);
-    return svg;
-}
 // ==========================================
 // 1. KONFIGURÁCIA FIREBASE (ZACHOVANÉ)
 // ==========================================
@@ -150,9 +127,9 @@ let userTotalXp = 0;
 let totalGlobalSteps = 0;
 let maxDailySteps = 0;
 let currentRouteSteps = 0; 
-let maxTriggeredSteps = 0;  
+let maxTriggeredSteps = 0; 
 
-let isVRActive = false; // ������ DÔLEŽITÉ: Musí tu byť pre VR
+let isVRActive = false; // ������ DÔLEŽITÉ: Musí tu byť pre VR
 
 let lastSeenTriggeredStep = -1;
 let isFirstLoadForToasts = true;
@@ -247,18 +224,7 @@ if (btnVR) {
         isVRActive = true;
         updateLevelUI();
 
-        // ������ SYNCHRONIZÁCIA: Hneď pri vstupe do VR vynútime "pohľad vpred" (0,0,0)
-// Keďže skybox je už na webe zrovnaný s cestou, toto ťa natočí priamo na ňu.
-        const cameraEl = document.getElementById('vrCamera');
-        if (cameraEl && cameraEl.components['look-controls']) {
-    // Resetujeme interné objekty look-controls (yaw a pitch)
-        cameraEl.components['look-controls'].yawObject.rotation.y = 0;
-        cameraEl.components['look-controls'].pitchObject.rotation.x = 0;
-    
-    // Pre istotu resetujeme aj samotný atribút entity
-        cameraEl.setAttribute('rotation', '0 0 0');
-        }
-        // ������ AKTUALIZÁCIA HUD PANELA
+        // ������ AKTUALIZÁCIA HUD PANELA
         const vrHud = document.getElementById('vrHud');
         const vrContent = document.getElementById('vrHudContent');
         const vrIcon = document.getElementById('vrToggleIcon');
@@ -273,7 +239,7 @@ if (btnVR) {
             setupVrToggle();
         }
 
-        // ������ AKTIVÁCIA A-FRAME REŽIMU A POSILNENÁ POISTKA SENZOROV
+        // ������ AKTIVÁCIA A-FRAME REŽIMU A POSILNENÁ POISTKA SENZOROV
         const scene = document.querySelector('a-scene');
         if (scene) {
             // POISTKA: Reset a vynútené prepojenie kamery so senzormi headsetu
@@ -297,7 +263,7 @@ if (btnVR) {
             }
         }
 
-        // ������ VYNÚTENÁ AKTUALIZÁCIA DÁT HNEĎ PRI ŠTARTE
+        // ������ VYNÚTENÁ AKTUALIZÁCIA DÁT HNEĎ PRI ŠTARTE
         const vrSteps = document.getElementById('vrStepsDisplay');
         const vrCals = document.getElementById('vrCaloriesDisplay');
         const vrDist = document.getElementById('vrDistanceDisplay');
@@ -310,33 +276,18 @@ if (btnVR) {
         updateVrNextPoi(currentRouteSteps, panoElement);
 
         // Pôvodná Google panoráma - teraz ju skryjeme, aby nezavadzala A-Frame scéne
-        // Pôvodná Google panoráma - skryjeme ju
         if (panorama) {
             panorama.setOptions({ 
-                visible: false, 
+                visible: false, // Skryjeme pôvodný renderer
                 motionTracking: false 
             });
 
-            // FIX: Získame smer z 2D webu pre počiatočnú synchronizáciu
-            const currentWebHeading = panorama.getPov().heading;
-            const sky = document.getElementById('skybox');
-            
-            // Získame orientáciu fotky bez pádovej funkcie getPanoData
-            const sv = new google.maps.StreetViewService();
-            sv.getPanorama({ location: panorama.getPosition(), radius: 50 }, (data, status) => {
-                if (status === "OK" && sky) {
-                    const panoCenterHeading = data.tiles.centerHeading || 0;
-                    const syncRotation = panoCenterHeading - currentWebHeading - 90;
-                    sky.setAttribute('rotation', `0 ${syncRotation} 0`);
-                }
-            });
-
+            // FIX: Resize pre istotu
             setTimeout(() => {
                 google.maps.event.trigger(panorama, 'resize');
-                if(statsEl.status) statsEl.status.innerText = "VR režim aktívny.";
+                if(statsEl.status) statsEl.status.innerText = "VR senzor aktívny. Otáčajte hlavou.";
             }, 1000);
         }
-        startVrArrowLoop();
     });
 }
 
@@ -541,42 +492,6 @@ function updateLevelUI() {
     }
 }
 
-// Pomocná funkcia pre dnešný dátum (zhodná s StepService.kt)
-function getTodayKey() {
-    const d = new Date();
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-}
-
-// Listener pre denné kroky
-const dailyKey = getTodayKey();
-database.ref(`dailyStats/${dailyKey}/steps`).on('value', (snapshot) => {
-    const val = snapshot.val() || 0;
-    
-    // Aktualizácia na webe
-    const dailyStepsEl = document.getElementById('dailySteps');
-    if (dailyStepsEl) dailyStepsEl.innerText = formatNum(val);
-
-    // Aktualizácia v čiernom VR paneli
-    const vrDailyDisplay = document.getElementById('vrDailyStepsDisplay');
-    if (vrDailyDisplay) vrDailyDisplay.innerText = formatNum(val);
-
-    // Aktualizácia v 3D VR texte
-    const vr3dDaily = document.getElementById('vr3dDailySteps');
-    if (vr3dDaily) {
-        vr3dDaily.setAttribute('value', `Dnes: ${formatNum(val)} kr.`);
-    }
-
-    // NOVÉ: Aktualizácia spálených kalórií za dnešok v 3D VR
-    const vr3dDailyCals = document.getElementById('vr3dDailyCals');
-    if (vr3dDailyCals) {
-        const dailyCals = Math.floor(val * 0.04 * (userWeight/70));
-        vr3dDailyCals.setAttribute('value', `Dnes: ${dailyCals} kcal`);
-    }
-});
-
 function checkAchievements() {
     let effectiveTotal = Math.max(totalGlobalSteps, currentRouteSteps);
     const nextMilestone = STEP_MILESTONES.find(m => m.t > effectiveTotal);
@@ -637,7 +552,7 @@ function attachRouteListeners(id) {
         let idx = Math.floor(steps / (stepsPerMove || 10));
         if(idx >= routePoints.length) idx = routePoints.length - 1;
 
-        // ������ OPRAVA ŠTATISTÍK NA WEBE (Obrázok 1)
+        // ������ OPRAVA ŠTATISTÍK NA WEBE (Obrázok 1)
         if(statsEl.pos) statsEl.pos.innerText = `${idx} / ${routePoints.length}`;
         if(statsEl.dist) statsEl.dist.innerText = traveledKm + " km";
         if(document.getElementById('percentage') && routePoints.length > 0) {
@@ -648,24 +563,11 @@ function attachRouteListeners(id) {
             moveVirtualPlayer(idx, steps); 
             if (routePoints[idx]) {
                 const pos = { lat: routePoints[idx].lat, lng: routePoints[idx].lng };
-                // ������ OPRAVA: Rozdelenie farieb trasy na mape
+                // ������ OPRAVA: Rozdelenie farieb trasy na mape
                 if (traveledPolyline) traveledPolyline.setPath(routePoints.slice(0, idx + 1));
                 if (remainingPolyline) remainingPolyline.setPath(routePoints.slice(idx));
-                if (panorama && !isVRActive) {                          
-            panorama.setPosition(pos);
-            
-            // Ak existuje nasledujúci bod, vypočítame smer k nemu
-            if (idx < routePoints.length - 1) {
-                const nextPt = routePoints[idx + 1];
-                const targetHeading = google.maps.geometry.spherical.computeHeading(
-                    new google.maps.LatLng(pos.lat, pos.lng),
-                    new google.maps.LatLng(nextPt.lat, nextPt.lng)
-                );
-                // Nastavíme pohľad panorámy priamo na ďalší bod
-                panorama.setPov({ heading: targetHeading, pitch: 0 });
-            }
-        }
-                if (mapMarker) { mapMarker.position = pos; if (map) map.panTo(pos); }
+                if (panorama && !isVRActive) panorama.setPosition(pos);
+                if (mapMarker) { mapMarker.setPosition(pos); if (map) map.panTo(pos); }
             }
             lastRenderedIndex = idx; 
         }
@@ -720,91 +622,43 @@ function updatePoiMarkersOnMap() {
         const point = routePoints[pointIdx];
         if (point) {
             const isReached = currentRouteSteps >= poi.requiredSteps;
-            const { AdvancedMarkerElement } = google.maps.marker;
-            const marker = new AdvancedMarkerElement({
-                map: map,
-                position: { lat: point.lat, lng: point.lng },
-                title: poi.title
-                // Custom ikonku môžeš pridať cez element property
-            });
+            const marker = new google.maps.Marker({ position: { lat: point.lat, lng: point.lng }, map: map, icon: { path: google.maps.SymbolPath.CIRCLE, scale: 6, fillColor: isReached ? '#4CAF50' : '#FFD600', fillOpacity: 1, strokeColor: '#333', strokeWeight: 1 } });
             poiMarkers.push(marker);
         }
     });
 }
+
 function moveVirtualPlayer(idx, steps) {
     if(!routePoints.length) return;
     const pt = routePoints[idx];
     const loc = { lat: pt.lat, lng: pt.lng };
     const sv = new google.maps.StreetViewService();
-    
     sv.getPanorama({ location: loc, radius: 50 }, (data, status) => {
         if (status === "OK") {
             const panoId = data.location.pano;
-            
-            // ������ OPRAVA 1: Tu musíme definovať panoCenterHeading z dát od Google
-            const panoCenterHeading = (data.tiles && data.tiles.centerHeading) ? data.tiles.centerHeading : 0;
-            
             const sky = document.getElementById('skybox');
             if (!sky) return;
-            
-            // Logika pre sťahovanie dlaždíc (Tento kód je v poriadku)
-            const canvas = document.createElement('canvas'); 
-            canvas.width = 4096; 
-            canvas.height = 2048;
-            const ctx = canvas.getContext('2d'); 
-            ctx.fillStyle = "black"; 
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
+            const canvas = document.createElement('canvas'); canvas.width = 4096; canvas.height = 2048;
+            const ctx = canvas.getContext('2d'); ctx.fillStyle = "black"; ctx.fillRect(0, 0, canvas.width, canvas.height);
             let loadedCount = 0;
             for (let y = 0; y < 4; y++) {
                 for (let x = 0; x < 8; x++) {
-                    const img = new Image(); 
-                    img.crossOrigin = "anonymous";
+                    const img = new Image(); img.crossOrigin = "anonymous";
                     img.src = `https://cbk0.google.com/cbk?output=tile&panoid=${panoId}&zoom=3&x=${x}&y=${y}`;
                     img.onload = function() {
-                        ctx.drawImage(img, x * 512, y * 512, 512, 512); 
-                        loadedCount++;
+                        ctx.drawImage(img, x * 512, y * 512, 512, 512); loadedCount++;
                         if (loadedCount === 32) {
-                            const tex = new THREE.CanvasTexture(canvas); 
-                            tex.mapping = THREE.EquirectangularMapping;
-                            const mesh = sky.getObject3D('mesh'); 
-                            if (mesh && mesh.material) { 
-                                mesh.material.map = tex; 
-                                mesh.material.needsUpdate = true; 
-                            }
+                            const tex = new THREE.CanvasTexture(canvas); tex.mapping = THREE.EquirectangularMapping;
+                            const mesh = sky.getObject3D('mesh'); if (mesh && mesh.material) { mesh.material.map = tex; mesh.material.needsUpdate = true; }
                         }
                     };
                     img.onerror = () => loadedCount++;
                 }
             }
-
-            // ������ OPRAVA 2: Natočenie nulového bodu a reset kamery
-            if (idx < routePoints.length - 1) {
-                const nextPt = routePoints[idx+1];
-                const targetHeading = google.maps.geometry.spherical.computeHeading(
-                    new google.maps.LatLng(pt.lat, pt.lng),
-                    new google.maps.LatLng(nextPt.lat, nextPt.lng)
-                );
-                
-                // Výpočet rotácie: orientácia fotky voči smeru trasy
-                const finalSkyRotation = panoCenterHeading - targetHeading - 90;
-                
-                // Nastavíme rotáciu sféry
-                sky.setAttribute('rotation', `0 ${finalSkyRotation} 0`);
-
-                // ������ Reset kamery (len ak sme vo VR), aby si sa pozeral na 0 (teda na cestu)
-                const cameraEl = document.getElementById('vrCamera');
-                if (cameraEl && cameraEl.components['look-controls'] && isVRActive) {
-                    cameraEl.components['look-controls'].yawObject.rotation.y = 0;
-                    cameraEl.components['look-controls'].pitchObject.rotation.x = 0;
-                }
-            }
-        } else {
-            console.error("Street View panoráma nebola nájdená pre tento bod.");
+            if (idx < routePoints.length - 1) sky.setAttribute('rotation', `0 ${-google.maps.geometry.spherical.computeHeading(loc, routePoints[idx+1])} 0`);
         }
     });
-    updateLevelUI(); 
-    checkAchievements();
+    updateLevelUI(); checkAchievements();
 }
 
 function initMaps(routeId) {
@@ -814,47 +668,16 @@ function initMaps(routeId) {
     // Výpočet celkovej vzdialenosti (Celkom km)
     const path = routePoints.map(p => new google.maps.LatLng(p.lat, p.lng));
     const totalKm = parseFloat((google.maps.geometry.spherical.computeLength(path) / 1000).toFixed(2));
-    const initialHeading = routePoints.length > 1 ? 
-    google.maps.geometry.spherical.computeHeading(start, routePoints[1]) : 0;
     if(statsEl.totalDist) statsEl.totalDist.innerText = `${totalKm} km`;
 
     if(!map) {
-        map = new google.maps.Map(divMap, {
-            center: start,
-            zoom: 15,
-            streetViewControl: false,
-            mapId: 'DEMO_MAP_ID' // demo mapId, pre plnú podporu AdvancedMarkerElement
-        });
-        const { AdvancedMarkerElement } = google.maps.marker;
-        // Dynamická šípka
-        let initialRotation = 0;
-        if (routePoints.length > 1) {
-            const from = new google.maps.LatLng(routePoints[0].lat, routePoints[0].lng);
-            const to = new google.maps.LatLng(routePoints[1].lat, routePoints[1].lng);
-            initialRotation = getHeading(from, to);
-        }
-        const arrowDiv = document.createElement('div');
-        arrowDiv.appendChild(createArrowSvg(initialRotation));
-        mapMarker = new AdvancedMarkerElement({
-            map: map,
-            position: start,
-            title: 'Štart',
-            content: arrowDiv
-        });
-        // Funkcia na aktualizáciu smeru šípky podľa najbližšej pozície
-        mapMarker._updateArrowRotation = function(idx) {
-            if (!routePoints[idx] || !routePoints[idx + 1]) return;
-            const from = new google.maps.LatLng(routePoints[idx].lat, routePoints[idx].lng);
-            const to = new google.maps.LatLng(routePoints[idx + 1].lat, routePoints[idx + 1].lng);
-            const heading = getHeading(from, to);
-            arrowDiv.innerHTML = '';
-            arrowDiv.appendChild(createArrowSvg(heading));
-        };
-        mapMarker._updateArrowRotation(0);
-        // ...existing code...
+        map = new google.maps.Map(divMap, { center: start, zoom: 15, streetViewControl: false });
+        mapMarker = new google.maps.Marker({ position: start, map: map, icon: { path: google.maps.SymbolPath.CIRCLE, scale: 8, fillColor: '#1565C0', fillOpacity: 1, strokeColor: 'white', strokeWeight: 2 } });
+        panorama = new google.maps.StreetViewPanorama(divPanorama, { position: start, pov: { heading: 0, pitch: 0 }, zoom: 1, addressControl: false });
+        map.setStreetView(panorama);
     }
     
-    // NOVÉ: Inicializácia dvoch čiar na mape
+    // ������ NOVÉ: Inicializácia dvoch čiar na mape
     if(traveledPolyline) traveledPolyline.setMap(null);
     if(remainingPolyline) remainingPolyline.setMap(null);
     traveledPolyline = new google.maps.Polyline({ path: [], strokeColor: '#4CAF50', strokeOpacity: 1.0, strokeWeight: 6, map: map });
@@ -866,46 +689,4 @@ function setupVrToggle() {
     const btn = document.getElementById('vrToggleStats'); const content = document.getElementById('vrHudContent');
     if (btn && content) { btn.onclick = (e) => { e.stopPropagation(); content.style.display = content.style.display === "none" ? "block" : "none"; }; }
 }
-
-function updateVrArrow() {
-    const arrow2d = document.getElementById('vrArrow');
-    const cameraEl = document.getElementById('vrCamera');
-    
-    if (!arrow2d || !cameraEl) return;
-
-    let relativeRotation = 0;
-
-    if (isVRActive) {
-        // VR REŽIM: Cesta je na 0°, tak len kompenzujeme tvoj pohľad
-        // Prevod radiánov z A-Frame na stupne
-        const cameraRotY = cameraEl.object3D.rotation.y * (180 / Math.PI);
-        
-        // Mínus zabezpečí, že šípka ukazuje späť k ceste (k nule)
-        relativeRotation = -cameraRotY; 
-    } else if (panorama) {
-        // 2D REŽIM: Klasický výpočet podľa Google Maps kompasu
-        const currentPt = routePoints[lastRenderedIndex];
-        const nextPt = routePoints[lastRenderedIndex + 1];
-        if (currentPt && nextPt) {
-            const targetHeading = google.maps.geometry.spherical.computeHeading(currentPt, nextPt);
-            relativeRotation = targetHeading - panorama.getPov().heading;
-        }
-    }
-
-    arrow2d.style.transform = `rotate(${relativeRotation}deg)`;
-}
-
-// Spustíme slučku aktualizácie
-// Jedna verzia slučky, ktorá beží stále a kontroluje šípku
-
-// Táto funkcia beží stále a plynule otáča šípku
-function startVrArrowLoop() {
-    updateVrArrow();
-    requestAnimationFrame(startVrArrowLoop);
-}
-
-// Spustenie hneď po načítaní stránky
-startVrArrowLoop();
-
-// Finálne zrovnanie rozloženia
 updateLayout();
