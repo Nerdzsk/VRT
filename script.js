@@ -1,24 +1,93 @@
+// ====== REVERSE GEOCODING: Získanie adresy podľa pozície (len pri zmene km) ======
+let lastAddressKm = null;
+let lastAddressText = 'Načítavam...';
+function fetchAddressForPosition(lat, lng, traveledKm) {
+    const traveledKmNum = Number(traveledKm);
+    const currentMeters = Math.floor(traveledKmNum * 1000);
+    const metersToNext = 1000 - (currentMeters % 1000);
+    const el = document.getElementById('address');
+    if (el) {
+        el.innerHTML = `${lastAddressText}<br><span style='color:#888;font-size:13px;'>akt. o ${metersToNext} m</span>`;
+    }
+    // 3D VR aktualizácia
+    const vr3dAddr = document.getElementById('vr3dAddress');
+    const vr3dAddrNext = document.getElementById('vr3dAddrNext');
+    if (vr3dAddr) vr3dAddr.setAttribute('value', `Adresa: ${lastAddressText}`);
+    if (vr3dAddrNext) vr3dAddrNext.setAttribute('value', `akt. o ${metersToNext} m`);
+        const currentKm = Math.floor(traveledKmNum);
+        // Načítaj adresu len pri zmene km
+        if (lastAddressKm === currentKm) return;
+        lastAddressKm = currentKm;
+    const GEOCODING_KEY = 'AIzaSyDIYh0YBP_dK97zjtUBZFRLfawvya5UMk8';
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${GEOCODING_KEY}&language=sk`;
+    console.log('[GEOCODING] Fetching address:', url);
+    fetch(url)
+        .then(resp => {
+            console.log('[GEOCODING] Response status:', resp.status);
+            return resp.json();
+        })
+        .then(data => {
+            console.log('[GEOCODING] Response data:', data);
+            let address = 'Neznáma lokalita';
+            if (data.status === 'OK' && data.results && data.results.length > 0) {
+                address = data.results[0].formatted_address;
+            }
+            lastAddressText = address;
+            const el = document.getElementById('address');
+            if (el) {
+                const metersToNext = 1000 - Math.floor((traveledKmNum * 1000) % 1000);
+                el.innerHTML = `${address}<br><span style='color:#888;font-size:13px;'>akt. o ${metersToNext} m</span>`;
+            }
+            // 3D VR aktualizácia
+            const vr3dAddr = document.getElementById('vr3dAddress');
+            const vr3dAddrNext = document.getElementById('vr3dAddrNext');
+            if (vr3dAddr) vr3dAddr.setAttribute('value', `Adresa: ${address}`);
+            if (vr3dAddrNext) vr3dAddrNext.setAttribute('value', `akt. o ${metersToNext} m`);
+        })
+        .catch(err => {
+            console.error('[GEOCODING] Fetch error:', err);
+            lastAddressText = 'Adresa sa nepodarila načítať';
+            const el = document.getElementById('address');
+            if (el) {
+                const metersToNext = 1000 - Math.floor((traveledKmNum * 1000) % 1000);
+                el.innerHTML = `Adresa sa nepodarila načítať<br><span style='color:#888;font-size:13px;'>akt. o ${metersToNext} m</span>`;
+            }
+            // 3D VR aktualizácia
+            const vr3dAddr = document.getElementById('vr3dAddress');
+            const vr3dAddrNext = document.getElementById('vr3dAddrNext');
+            if (vr3dAddr) vr3dAddr.setAttribute('value', 'Adresa sa nepodarila načítať');
+            if (vr3dAddrNext) vr3dAddrNext.setAttribute('value', `akt. o ${metersToNext} m`);
+        });
+}
 // ====== Helper funkcie pre šípku na mape ======
 function getHeading(from, to) {
     // Google Maps API už poskytuje computeHeading, ale obalíme pre konzistentnosť
     return google.maps.geometry.spherical.computeHeading(from, to);
 }
 
-function createArrowSvg(rotation) {
-    // SVG šípka, otočená podľa rotation (v stupňoch), upravená o -90° aby smerovala po ceste
+function createArrowSvg() {
+    // Modrá gulička, presne centrovaná, s bielym okrajom
     const svgNS = "http://www.w3.org/2000/svg";
     const svg = document.createElementNS(svgNS, "svg");
     svg.setAttribute("width", "40");
     svg.setAttribute("height", "40");
     svg.setAttribute("viewBox", "0 0 40 40");
-    svg.style.transform = `rotate(${rotation - 90}deg)`;
-    svg.style.transition = "transform 0.2s";
-    const arrow = document.createElementNS(svgNS, "polygon");
-    arrow.setAttribute("points", "20,5 30,35 20,28 10,35");
-    arrow.setAttribute("fill", "#FFD600");
-    arrow.setAttribute("stroke", "#333");
-    arrow.setAttribute("stroke-width", "2");
-    svg.appendChild(arrow);
+    // Biela výplň pre lepšiu viditeľnosť
+    const white = document.createElementNS(svgNS, "circle");
+    white.setAttribute("cx", "20");
+    white.setAttribute("cy", "20");
+    white.setAttribute("r", "12");
+    white.setAttribute("fill", "#fff");
+    svg.appendChild(white);
+    // Modrá gulička
+    const circle = document.createElementNS(svgNS, "circle");
+    circle.setAttribute("cx", "20");
+    circle.setAttribute("cy", "20");
+    circle.setAttribute("r", "9");
+    circle.setAttribute("fill", "#2196F3");
+    circle.setAttribute("stroke", "#0D47A1");
+    circle.setAttribute("stroke-width", "2");
+    svg.appendChild(circle);
     return svg;
 }
 // ==========================================
@@ -537,7 +606,7 @@ function updateLevelUI() {
         if (vrLvlTitle) vrLvlTitle.innerText = getRankTitle(lvl);
         if (vrLvlBar) vrLvlBar.style.width = `${Math.min(100, pct)}%`;
         if (vrLvlXpText) vrLvlXpText.innerText = `${formatNum(userTotalXp)} / ${formatNum(nxtXp)} XP`;
-        if (v3dLvl) v3dLvl.setAttribute('value', clean(`Level ${lvl} | ${getRankTitle(lvl)}`));
+        // odstránené: v3dLvl (level a názov sa už v 3D nezobrazuje)
     }
 }
 
@@ -609,7 +678,8 @@ function attachRouteListeners(id) {
 
         if (newMaxTriggered > lastSeenTriggeredStep) { if (!isFirstLoadForToasts && newMaxTriggered > 0) { const triggeredPoi = currentRoutePois.find(p => p.requiredSteps === newMaxTriggered); if (triggeredPoi) showPoiToast(triggeredPoi); } lastSeenTriggeredStep = newMaxTriggered; isFirstLoadForToasts = false; }
 
-        const traveledKm = (steps * 0.00075).toFixed(2);
+        const traveledKm = steps * 0.00075;
+        const traveledKmRounded = traveledKm.toFixed(2);
         const calCount = Math.floor(steps * 0.04 * (userWeight/70));
 
         if(statsEl.steps) statsEl.steps.innerText = formatNum(steps);      
@@ -622,13 +692,13 @@ function attachRouteListeners(id) {
             const vrDist = pano.querySelector('#vrDistanceDisplay');
             if(vrSteps) vrSteps.innerText = formatNum(steps);
             if(vrCals) vrCals.innerText = calCount;
-            if(vrDist) vrDist.innerText = traveledKm + " km";
+            if(vrDist) vrDist.innerText = traveledKmRounded + " km";
 
             const v3dSteps = document.getElementById('vr3dSteps');
             const v3dDist = document.getElementById('vr3dDist');
             const v3dCals = document.getElementById('vr3dCals');
             if (v3dSteps) v3dSteps.setAttribute('value', formatNum(steps) + " kr.");
-            if (v3dDist) v3dDist.setAttribute('value', traveledKm + " km");
+            if (v3dDist) v3dDist.setAttribute('value', traveledKmRounded + " km");
             if (v3dCals) v3dCals.setAttribute('value', calCount + " kcal");
 
             updateVrNextPoi(steps, pano);
@@ -639,33 +709,34 @@ function attachRouteListeners(id) {
 
         // ������ OPRAVA ŠTATISTÍK NA WEBE (Obrázok 1)
         if(statsEl.pos) statsEl.pos.innerText = `${idx} / ${routePoints.length}`;
-        if(statsEl.dist) statsEl.dist.innerText = traveledKm + " km";
+        if(statsEl.dist) statsEl.dist.innerText = traveledKmRounded + " km";
         if(document.getElementById('percentage') && routePoints.length > 0) {
-            document.getElementById('percentage').innerText = ((idx / (routePoints.length - 1)) * 100).toFixed(1) + " %";
+            document.getElementById('percentage').innerText = ((idx / (routePoints.length - 1)) * 100).toFixed(1);
         }
 
         if(idx !== lastRenderedIndex) { 
             moveVirtualPlayer(idx, steps); 
             if (routePoints[idx]) {
                 const pos = { lat: routePoints[idx].lat, lng: routePoints[idx].lng };
-                // ������ OPRAVA: Rozdelenie farieb trasy na mape
+                // OPRAVA: Rozdelenie farieb trasy na mape
                 if (traveledPolyline) traveledPolyline.setPath(routePoints.slice(0, idx + 1));
                 if (remainingPolyline) remainingPolyline.setPath(routePoints.slice(idx));
                 if (panorama && !isVRActive) {                          
-            panorama.setPosition(pos);
-            
-            // Ak existuje nasledujúci bod, vypočítame smer k nemu
-            if (idx < routePoints.length - 1) {
-                const nextPt = routePoints[idx + 1];
-                const targetHeading = google.maps.geometry.spherical.computeHeading(
-                    new google.maps.LatLng(pos.lat, pos.lng),
-                    new google.maps.LatLng(nextPt.lat, nextPt.lng)
-                );
-                // Nastavíme pohľad panorámy priamo na ďalší bod
-                panorama.setPov({ heading: targetHeading, pitch: 0 });
-            }
-        }
+                    panorama.setPosition(pos);
+                    // Ak existuje nasledujúci bod, vypočítame smer k nemu
+                    if (idx < routePoints.length - 1) {
+                        const nextPt = routePoints[idx + 1];
+                        const targetHeading = google.maps.geometry.spherical.computeHeading(
+                            new google.maps.LatLng(pos.lat, pos.lng),
+                            new google.maps.LatLng(nextPt.lat, nextPt.lng)
+                        );
+                        // Nastavíme pohľad panorámy priamo na ďalší bod
+                        panorama.setPov({ heading: targetHeading, pitch: 0 });
+                    }
+                }
                 if (mapMarker) { mapMarker.position = pos; if (map) map.panTo(pos); }
+                // === Reverse geocoding: načítaj adresu len pri zmene km ===
+                fetchAddressForPosition(pos.lat, pos.lng, traveledKm);
             }
             lastRenderedIndex = idx; 
         }
@@ -827,30 +898,32 @@ function initMaps(routeId) {
         });
         const { AdvancedMarkerElement } = google.maps.marker;
         // Dynamická šípka
-        let initialRotation = 0;
-        if (routePoints.length > 1) {
-            const from = new google.maps.LatLng(routePoints[0].lat, routePoints[0].lng);
-            const to = new google.maps.LatLng(routePoints[1].lat, routePoints[1].lng);
-            initialRotation = getHeading(from, to);
-        }
-        const arrowDiv = document.createElement('div');
-        arrowDiv.appendChild(createArrowSvg(initialRotation));
+        const markerDiv = document.createElement('div');
+        markerDiv.style.display = 'flex';
+        markerDiv.style.alignItems = 'center';
+        markerDiv.style.justifyContent = 'center';
+        markerDiv.style.width = '40px';
+        markerDiv.style.height = '40px';
+        markerDiv.style.padding = '0';
+        markerDiv.style.margin = '0';
+        markerDiv.appendChild(createArrowSvg());
         mapMarker = new AdvancedMarkerElement({
             map: map,
             position: start,
             title: 'Štart',
-            content: arrowDiv
+            content: markerDiv
         });
+    markerDiv.style.position = 'absolute';
+    markerDiv.style.left = '50%';
+    markerDiv.style.top = '50%';
+    markerDiv.style.transform = 'translate(-50%, -50%)';
+
+        // Po inicializácii mapy nastavíme marker na aktuálny koniec prejdenej trasy (ak už je nejaký postup)
+        if (typeof lastRenderedIndex === 'number' && lastRenderedIndex >= 0 && routePoints[lastRenderedIndex]) {
+            mapMarker.position = { lat: routePoints[lastRenderedIndex].lat, lng: routePoints[lastRenderedIndex].lng };
+        }
         // Funkcia na aktualizáciu smeru šípky podľa najbližšej pozície
-        mapMarker._updateArrowRotation = function(idx) {
-            if (!routePoints[idx] || !routePoints[idx + 1]) return;
-            const from = new google.maps.LatLng(routePoints[idx].lat, routePoints[idx].lng);
-            const to = new google.maps.LatLng(routePoints[idx + 1].lat, routePoints[idx + 1].lng);
-            const heading = getHeading(from, to);
-            arrowDiv.innerHTML = '';
-            arrowDiv.appendChild(createArrowSvg(heading));
-        };
-        mapMarker._updateArrowRotation(0);
+        // Už netreba rotovať, marker je gulička
         // ...existing code...
     }
     

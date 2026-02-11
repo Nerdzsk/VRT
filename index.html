@@ -40,7 +40,6 @@
 
     <div id="statsPanel" class="visible">
         <h3>Štatistiky</h3>
-
         <div id="levelBox">
             <div class="level-header">
                 <span id="userLevel">Level 1</span>
@@ -50,54 +49,61 @@
                 <div id="levelProgressBar" class="level-progress-fill"></div>
             </div>
             <div id="levelXpText">0 / 200 XP</div>
-            
             <button id="btnShowLevels" class="level-list-btn">Zobraziť všetky úrovne</button>
         </div>
-        
         <div class="stat-row">
             <span class="stat-label">Kroky z mobilu:</span>
             <span class="stat-value" id="steps">0</span>
         </div>
+                <div class="stat-row">
+                    <span class="stat-label">Dnes celkovo:</span>
+                    <span class="stat-value" id="dailySteps" style="color: #FBC02D;">0</span>
+                </div>
 
+                <div class="achievement-box">
+                    <div class="stat-label" style="font-weight: bold; color: #1565C0;"><i class="material-icons" style="font-size: 16px; vertical-align: middle;">emoji_events</i> Najbližší cieľ:</div>
+                    <div id="nextGoalName" class="goal-title">Načítavam...</div>
+                    <div class="progress-container">
+                        <div id="goalProgressBar" class="progress-bar"></div>
+                    </div>
+                    <div class="goal-stats">
+                        <span id="goalCurrent">0</span> / <span id="goalTarget">0</span>
+                        <span id="goalRemaining" style="color: #D32F2F; margin-left: 5px; font-weight:bold;"></span>
+                    </div>
+                </div>
         <div class="stat-row">
             <span class="stat-label">Spálené kalórie:</span>
             <span class="stat-value" id="calories">0 kcal</span>
         </div>
-
-        <div class="achievement-box">
-            <div class="stat-label" style="font-weight: bold; color: #1565C0;"><i class="material-icons" style="font-size: 16px; vertical-align: middle;">emoji_events</i> Najbližší cieľ:</div>
-            <div id="nextGoalName" class="goal-title">Načítavam...</div>
-            
-            <div class="progress-container">
-                <div id="goalProgressBar" class="progress-bar"></div>
-            </div>
-            
-            <div class="goal-stats">
-                <span id="goalCurrent">0</span> / <span id="goalTarget">0</span>
-                <span id="goalRemaining" style="color: #D32F2F; margin-left: 5px; font-weight:bold;"></span>
-            </div>
-        </div>
-
         <div class="stat-row">
             <span class="stat-label">Pozícia:</span>
             <span class="stat-value" id="position">0 / 0</span>
         </div>
-
         <div class="stat-row">
             <span class="stat-label">Prejdené / Celkom:</span>
             <span class="stat-value">
                 <span id="traveledDistance">0.00 km</span> / <span id="totalRouteDistance" style="color:#777;">0.00 km</span>
             </span>
         </div>
+        
+        <div class="stat-row">
+            <span class="stat-label">Percento trasy:</span>
+            <span class="stat-value"><span id="percentage">0.0</span> %</span>
+        </div>
+        <div class="stat-row">
+            <span class="stat-label" style="font-weight:bold;">ADRESA:</span>
+            <span class="stat-value" id="address" style="display:block; font-weight:500; margin-top:2px; margin-bottom:2px;">Načítavam...</span>
+        </div>
 
-        <div class="stat-row">
-            <span class="stat-label">Progres:</span>
-            <span class="stat-value" id="percentage">0.0 %</span>
+
+
+        <div class="stat-row" id="vrHudAddressBox" style="display:none;">
+            <span class="stat-label">Adresa:</span>
+            <span class="stat-value" id="vrHudAddress">Načítavam...</span>
+            <br><span id="vrHudAddressNext" style="color:#90A4AE;font-size:13px;">akt. o 1000 m</span>
         </div>
-        <div class="stat-row">
-            <span class="stat-label">Dnes celkovo:</span>
-            <span class="stat-value" id="dailySteps" style="color: #FBC02D;">0</span>
-        </div>
+        <span class="stat-value" id="percentage" style="display:none;">0.0 %</span>
+        
         
 
         <div id="status">Pripravené.</div>
@@ -135,16 +141,15 @@
     <a-entity id="vrCamera" camera look-controls >
         <a-entity id="vr3dHud" position="0 -0.5 -1.2" scale="0.4 0.4 0.4">
             
-            <a-text id="vr3dLevelText" value="Level 1 | Gaucovy povalac" 
-                    position="0 0.4 0" align="center" width="4" color="#FFD600"></a-text>
 
-            <a-text id="vr3dSteps" value="0 kr." position="-0.8 0.1 0" align="center" width="3"></a-text>
-            <a-text id="vr3dDist" value="0.00 km" position="0 0.1 0" align="center" width="3"></a-text>
-            <a-text id="vr3dCals" value="0 kcal" position="0.8 0.1 0" align="center" width="3"></a-text>
-            <a-text id="vr3dDailySteps" value="Dnes: 0 kr." position="0 -0.4 0" align="center" width="3" color="#FFEB3B"></a-text>
-            <a-text id="vr3dDailyCals" value="Dnes: 0 kcal" position="0 -0.55 0" align="center" width="3" color="#FF7043"></a-text>
-            <a-text id="vr3dNextPoi" value="Ciel: Nacitavam, urob par krokv ..." 
-                    position="0 -0.2 0" align="center" width="3" color="#81C784"></a-text>
+                <a-text id="vr3dSteps" value="0 kr." position="-0.8 0.1 0" align="center" width="3"></a-text>
+                <a-text id="vr3dDist" value="0.00 km" position="0 0.1 0" align="center" width="3"></a-text>
+                <a-text id="vr3dCals" value="0 kcal" position="0.8 0.1 0" align="center" width="3"></a-text>
+                <a-text id="vr3dNextPoi" value="Ciel: Nacitavam, urob par krokv ..." position="0 0.00 0" align="center" width="2.5" font-size="0.18" color="#81C784"></a-text>
+                <a-text id="vr3dAddress" value="Adresa: Nacitavam..." position="0 -0.25 0" align="center" width="2.5" font-size="0.18" color="#90CAF9"></a-text>
+                <a-text id="vr3dAddrNext" value="akt. o 1000 m" position="0 -0.50 0" align="center" width="2.5" font-size="0.18" color="#FFD600"></a-text>
+                <a-text id="vr3dDailyCals" value="Dnes: 0 kcal" position="0 -0.75 0" align="center" width="2.5" font-size="0.18" color="#FF7043"></a-text>
+                <a-text id="vr3dDailySteps" value="Dnes: 0 kr." position="0 -1.00 0" align="center" width="2.5" font-size="0.18" color="#FFEB3B"></a-text>
 
             <a-entity id="vrPoiNotification" position="0 0.8 0" visible="false">
                 <a-text id="vrPoiTitle" value="" align="center" position="0 0.3 0" width="3.5" color="#FFD600"></a-text>
